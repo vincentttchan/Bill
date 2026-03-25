@@ -71,7 +71,6 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
     }
     
-    /* 高中專屬卡片強調 */
     .level-card.dse-card {
         grid-column: 1 / -1; 
         background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(238,242,255,0.9));
@@ -250,6 +249,7 @@
 <div class="app-container">
     <div class="glass-card">
         
+        <!-- 首頁：級別選擇 -->
         <div id="screen-select" class="screen active">
             <div class="start-content">
                 <h1>歷史大挑戰</h1>
@@ -259,22 +259,24 @@
                     <div class="level-card" onclick="selectLevel('S1')">
                         <div class="level-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg></div>
                         <h2>中一級：兩漢歷史</h2>
-                        <p>漢初無為至東漢戚宦相爭</p>
+                        <p>漢初無為至武帝施政</p>
                     </div>
                     <div class="level-card" onclick="selectLevel('S2')">
                         <div class="level-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
                         <h2>中二級：近代中國</h2>
-                        <p>滿清入關至英法聯軍之役</p>
+                        <p>滿清入關及民族政策</p>
                     </div>
+                    <!-- 高中 DSE 選項 -->
                     <div class="level-card dse-card" onclick="selectLevel('DSE')">
                         <div class="level-icon" style="background: #4F46E5; color: white; width: 72px; height: 72px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div>
-                        <h2 style="color: #4F46E5; font-size: 1.6rem;">高中 DSE：共和國對外關係</h2>
-                        <p style="color: #1E293B; font-weight: 500;">混合題型：15 題 MC + 5 題短答自我評估</p>
+                        <h2 style="color: #4F46E5; font-size: 1.6rem;">高中 DSE：對外關係</h2>
+                        <p style="color: #1E293B; font-weight: 500;">混合題型：15 題 MC + 5 題短答評估</p>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- 規則與開始畫面 -->
         <div id="screen-start" class="screen">
             <button class="btn-secondary" onclick="switchScreen('screen-select')">← 返回選擇級別</button>
             <div class="start-content">
@@ -285,6 +287,7 @@
             </div>
         </div>
 
+        <!-- 遊戲畫面 -->
         <div id="screen-quiz" class="screen">
             <div class="header-section">
                 <div class="title-group">
@@ -296,7 +299,7 @@
             <div class="progress-wrapper">
                 <div class="progress-text">
                     <span>挑戰進度</span>
-                    <span class="font-num"><span id="current-q-num">1</span> / 20</span>
+                    <span class="font-num"><span id="current-q-num">1</span> / <span id="total-q-num">20</span></span>
                 </div>
                 <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
             </div>
@@ -318,8 +321,10 @@
                 <h2 id="question-text" class="question-text">載入題目中...</h2>
             </div>
 
+            <!-- MC 選項區 -->
             <div class="options-grid" id="options-container"></div>
             
+            <!-- 短答題自我評估區 -->
             <div class="sa-container" id="sa-container">
                 <p class="sa-prompt">💭 這是一道概念短答題。請在腦海中或紙上構思你的答案（要點），準備好後點擊下方按鈕查看評分參考。</p>
                 <button class="btn-reveal" id="btn-reveal-sa" onclick="revealSA()">顯示評分參考 (Marking Scheme)</button>
@@ -339,9 +344,11 @@
                 </div>
             </div>
 
+            <!-- MC 訊息與下一題 -->
             <div id="message-panel" class="message-panel"></div>
         </div>
 
+        <!-- 結束畫面 -->
         <div id="screen-end" class="screen">
             <div class="start-content">
                 <div id="end-icon" style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; border-radius: 50%; margin-bottom: 1.5rem; border: 2px solid;"></div>
@@ -355,32 +362,53 @@
 </div>
 
 <script>
-    // 中一級與中二級題庫略過，保持結構完整
+    // ==========================================
+    // 中一級題庫：兩漢歷史 (根據 s1 答案.pdf 編寫，10題)
+    // ==========================================
     const s1Questions = [
-        { type: 'MC', q: "漢初國力疲憊，高祖至文景二帝為恢復生息，主要推行了哪一項治國理念？", options: ["獨尊儒術", "無為而治", "嚴刑峻法", "重農抑商"], ans: 1, prize: "1,000", info: "漢初推行「無為而治」，實行與民休息。" },
-        // ... (為了展示簡潔，省略 S1/S2 詳細題目，若您需要完整保留可貼回上一版的題庫陣列)
-        { type: 'MC', q: "東漢末年爆發了規模龐大的「黃巾之亂」，動搖了東漢根基。這場民變能迅速蔓延的關鍵背景是什麼？", options: ["漢武帝長年對外征戰導致兵源枯竭", "王莽改制失敗引發地主反抗", "朝政腐敗加天災，張角藉「太平道」號召絕望農民", "宦官與外戚發動叛亂"], ans: 2, prize: "1,000,000", info: "東漢末期政治黑暗加天災，張角以「太平道」號召農民起義。" }
+        { type: 'MC', q: "漢初因戰亂導致國力疲憊，漢高祖及文景二帝為恢復生息，主要推行了哪一項治國理念？", options: ["獨尊儒術", "嚴刑峻法", "無為而治", "重農抑商"], ans: 2, prize: "100", info: "漢初推行「無為而治」，實行與民休息，鼓勵農業、減輕賦役及減少戰爭。" },
+        { type: 'MC', q: "經過漢初六十年的休養生息，這對後來漢朝的發展產生了什麼積極影響？", options: ["徹底消滅了北方的匈奴", "為漢武帝建立了重要的統治基礎與國力", "導致地方諸侯王完全失去權力", "促成了佛教傳入中國"], ans: 1, prize: "200", info: "休養生息讓漢室國力得到重大恢復，為後來漢武帝的擴張和施政奠定了物質基礎。" },
+        { type: 'MC', q: "漢初在地方行政上推行「郡國制」。這項制度的具體內容是什麼？", options: ["全國統一實行郡縣制", "中央管轄區行郡縣制，地方則推行分封制", "廢除所有郡縣，恢復周朝的封建制度", "由地方豪強自治"], ans: 1, prize: "300", info: "漢初推行郡國並行制，即中央直轄地區設立郡縣，其他地區則分封諸侯王建立王國。" },
+        { type: 'MC', q: "漢景帝時，曾試圖削弱地方郡國的權力，結果引發了哪一場動亂？", options: ["黃巾之亂", "八王之亂", "七國之亂", "安史之亂"], ans: 2, prize: "500", safe: true, info: "景帝削藩，引發了吳楚等七國的叛亂，史稱「七國之亂」，反映了當時郡國力量過強、不受中央控制的問題。" },
+        { type: 'MC', q: "漢初面對外族匈奴經常侵擾邊境，由於國力較弱，漢室主要採取什麼政策作安撫以換取和平？", options: ["和親政策", "築長城防禦", "派兵主動出擊", "稱臣納貢"], ans: 0, prize: "1,000", info: "漢初國力不濟，只能採用「和親政策」安撫匈奴，將公主嫁給匈奴單于並贈送財物。" },
+        { type: 'MC', q: "到了漢武帝時期，面對地方郡國強大的威脅，他實行了什麼政策以逐步削弱郡國力量？", options: ["杯酒釋兵權", "推恩令", "削藩令", "設置節度使"], ans: 1, prize: "2,000", info: "漢武帝實行「推恩令」，規定諸侯王死後，除嫡長子繼承王位外，還要將土地分封給其他子弟，使王國越分越小。" },
+        { type: 'MC', q: "為了加強統治力量及統一思想，漢武帝聽從了董仲舒的建議，實行了哪一項政策？", options: ["焚書坑儒", "獨尊儒術", "崇尚黃老", "科舉取士"], ans: 1, prize: "4,000", info: "漢武帝實行「罷黜百家，獨尊儒術」，確立了儒家思想的正統地位。" },
+        { type: 'MC', q: "配合「獨尊儒術」的政策，漢武帝在教育制度上作出了什麼創舉以培養人才？", options: ["設立太學", "創辦書院", "舉辦科舉", "實行九品中正制"], ans: 0, prize: "8,000", safe: true, info: "漢武帝在長安設立「太學」，以儒家五經教授學生，成績優異者可入朝做官。" },
+        { type: 'MC', q: "因國力恢復，漢武帝改變了漢初對匈奴的退讓態度。他派出了哪兩位著名將領帶兵反擊匈奴？", options: ["蒙恬、王翦", "衛青、霍去病", "李廣、程不識", "關羽、張飛"], ans: 1, prize: "16,000", info: "漢武帝派大將軍衛青及驃騎將軍霍去病多次出擊匈奴，成功解除匈奴對北方邊境的威脅。" },
+        { type: 'MC', q: "漢武帝時期，為了聯絡西域各國夾擊匈奴，他派了誰出使西域，意外促成了中西交通的開拓？", options: ["班超", "張騫", "玄奘", "鄭和"], ans: 1, prize: "32,000", info: "張騫出使西域，雖然沒有達成夾擊匈奴的軍事目的，但開通了著名的「絲綢之路」。" }
+    ];
+
+    // ==========================================
+    // 中二級題庫：近代中國 - 滿清入關及民族政策 (根據 s2 答案.pdf 編寫，10題)
+    // ==========================================
+    const s2Questions = [
+        { type: 'MC', q: "滿人原為女真族。明朝末年，是哪一位領袖統一了女真各部族，建立「後金」？", options: ["皇太極", "努爾哈赤", "多爾袞", "康熙"], ans: 1, prize: "100", info: "努爾哈赤統一女真各部，建立後金，為清朝的建立奠下基礎。" },
+        { type: 'MC', q: "努爾哈赤創立了什麼制度，將生產和軍事結合起來，使女真國力日漸強大？", options: ["猛安謀克制", "府兵制", "八旗制", "衛所制"], ans: 2, prize: "200", info: "努爾哈赤創立了「八旗兵制」，平時為民耕獵，戰時皆兵，戰鬥力極強。" },
+        { type: 'MC', q: "在進攻寧遠城時，努爾哈赤被明朝哪一位將領以西洋大砲擊傷，不久後身亡？", options: ["袁崇煥", "史可法", "鄭成功", "吳三桂"], ans: 0, prize: "300", info: "明將袁崇煥堅守寧遠，以紅衣大炮擊退後金軍，擊傷努爾哈赤。" },
+        { type: 'MC', q: "皇太極繼位後，為了除掉防守嚴密的明將袁崇煥，他使用了什麼計謀？", options: ["苦肉計", "空城計", "反間計", "連環計"], ans: 2, prize: "500", safe: true, info: "皇太極利用「反間計」散播謠言，令明思宗中計，誤殺了抗清名將袁崇煥。" },
+        { type: 'MC', q: "明朝末年政治敗壞、人民困苦，哪一位領袖發動民變並攻入首都北京，導致明思宗自縊？", options: ["黃巢", "張角", "李自成", "洪秀全"], ans: 2, prize: "1,000", info: "李自成利用明末天災人禍的時機號召人民發動民變，最終攻陷北京，明朝滅亡。" },
+        { type: 'MC', q: "李自成攻陷北京後，負責鎮守山海關的哪一位明朝將領選擇降清，並打開關門讓清兵入關？", options: ["袁崇煥", "史可法", "吳三桂", "左良玉"], ans: 2, prize: "2,000", info: "吳三桂因不滿李自成而選擇降清，引清兵入山海關，滿清藉此入主中原。" },
+        { type: 'MC', q: "清朝以少數民族身分統治漢人，為免重蹈覆轍，他們借鑑了哪一個朝代「只用高壓統治而導致速亡」的教訓？", options: ["秦朝", "隋朝", "元朝", "明朝"], ans: 2, prize: "4,000", info: "清朝吸取元朝單靠高壓鎮壓漢人而迅速滅亡的教訓，採取了「高壓與懷柔並施」的政策。" },
+        { type: 'MC', q: "下列哪一項是清朝入關後為了打擊反清力量、嚴懲漢人集會及言論而推行的「高壓政策」？", options: ["大興文字獄", "重開科舉", "推行推恩令", "罷黜百家"], ans: 0, prize: "8,000", safe: true, info: "清朝實行屠城鎮壓及大興文字獄，以嚴酷手段打擊漢人的反清思想與行動。" },
+        { type: 'MC', q: "清朝規定漢人必須跟從滿清風俗實行「薙髮令」。此舉的主要政治目的是什麼？", options: ["改善漢人的衛生習慣", "消磨漢人的民族意識與反抗精神", "方便軍隊作戰時辨認敵我", "為推行滿洲服飾作準備"], ans: 1, prize: "16,000", info: "強迫漢人「薙髮留辮」是為了摧毀漢人的民族自尊心和文化認同，從而減低反抗意識。" },
+        { type: 'MC', q: "除了高壓統治，清朝也採取了「懷柔政策」來安撫漢人。下列哪一項屬於懷柔政策的表現？", options: ["修築長城防禦蒙古", "禁止滿漢通婚", "厚葬明思宗及重開科舉", "設立軍機處削弱相權"], ans: 2, prize: "32,000", info: "清朝透過厚葬明思宗、厚待降臣、減輕賦役及重開科舉等懷柔手段，成功爭取了漢族士大夫與平民的支持。" }
     ];
     
     // ==========================================
-    // 高中 DSE 題庫：中華人民共和國對外關係
+    // 高中 DSE 題庫：對外關係 (20題：15 MC + 5 SA)
     // ==========================================
     const dseQuestions = [
-        // --- 1950年代 ---
         { type: 'MC', q: "1949年建國初期，毛澤東宣佈實行「一邊倒」的外交方針。促成此決策的最主要國際背景是什麼？", options: ["中國需要大量的資本主義資金來發展重工業", "蘇聯威脅若不結盟將切斷對華糧食供應", "冷戰格局形成，以美國為首的西方陣營對華實施政治孤立與經濟封鎖", "為參與聯合國安全理事會爭取蘇聯的選票支持"], ans: 2, prize: "10分", info: "建國初冷戰爆發，美國對中共採取敵視與經濟封鎖，迫使中國只能「倒向社會主義陣營一邊」以求生存與發展。" },
         { type: 'MC', q: "韓戰（抗美援朝）對當時的中美關係及中國的地緣政治產生了什麼長遠影響？", options: ["促使中美兩國提早建立外交關係", "導致美國派遣第七艦隊協防台灣，令兩岸分裂局面長期化", "美國因此解除了對中國的經濟禁運", "蘇聯認為中國好戰而撤回所有對華援助"], ans: 1, prize: "20分", info: "韓戰爆發後，美國派第七艦隊進入台灣海峽，阻止中共解放台灣，導致中美長期處於敵對狀態及兩岸分裂。" },
         { type: 'MC', q: "1953年，周恩來首次提出「和平共處五項原則」。這項原則提出時，最主要是為了解決哪一方面的外交需求？", options: ["作為與蘇聯簽訂同盟條約的先決條件", "為了解除美國對華的全面經濟禁運", "為了消除鄰近民族主義國家（如印度、緬甸）對共產主義輸出的疑慮，尋求和平睦鄰", "為了確立中國在第三世界的不結盟霸主地位"], ans: 2, prize: "30分", info: "建國初，周邊新獨立國家對共產中國有戒心。提出互相尊重主權、互不干涉內政等原則，成功打開了睦鄰友好的外交局面。" },
         { type: 'MC', q: "1955年萬隆會議（亞非會議）上，面對部分國家對共產主義的攻擊，周恩來提出了什麼著名方針，成功打破僵局？", options: ["反帝防修", "一邊倒", "求同存異", "兩個中間地帶"], ans: 2, prize: "40分", info: "周恩來提出「求同存異」，強調亞非國家雖制度不同（異），但都有反殖民、求發展的共同願望（同），成功促進亞非團結。" },
-        // --- 1960年代 ---
         { type: 'MC', q: "1960年代中蘇關係走向破裂。下列哪一項【不是】導致兩國交惡的核心原因？", options: ["意識形態分歧（蘇聯提倡三和路線，中共視其為修正主義）", "蘇聯意圖對中國實行軍事控制（如提議建立聯合艦隊）", "蘇聯片面撕毀對華經濟與核技術的援助合同", "中國決定在越戰中與美國結盟共同對抗蘇聯"], ans: 3, prize: "50分", safe: true, info: "60年代中美依然敵對（越戰期間更甚），中國並未與美國結盟。中蘇破裂主因是意識形態分歧及蘇聯的大國沙文主義。" },
         { type: 'MC', q: "面對60年代美蘇兩大超級強國的雙重敵視，中國在外交戰略上提出了什麼理論來尋求突破？", options: ["一邊倒政策", "兩個中間地帶", "聯美抗蘇", "全方位外交"], ans: 1, prize: "60分", info: "毛澤東提出「兩個中間地帶」，試圖團結亞非拉國家（第一中間地帶）以及歐洲/日本等發達資本主義國家（第二中間地帶）以對抗美蘇兩霸。" },
         { type: 'MC', q: "1969年爆發了哪一場嚴重的流血武裝衝突，標誌著中蘇關係惡化至戰爭邊緣？", options: ["中印邊境衝突", "珍寶島事件", "金門砲戰", "朝鮮戰爭"], ans: 1, prize: "70分", info: "1969年珍寶島事件爆發，蘇聯更揚言對華動用核武。這讓中共高層深刻意識到蘇聯已成為中國「最主要、最直接的威脅」。" },
-        // --- 1970年代 ---
         { type: 'MC', q: "1970年代初，中國調整外交戰略為「聯美抗蘇」。促成美國也願意與中國改善關係的最主要考量是什麼？", options: ["美國欲引進中國的廉價勞動力與市場", "美國希望聯合中國推翻聯合國體制", "美國深陷越戰泥沼且在冷戰中處於守勢，希望「聯中制蘇」", "中國宣佈放棄共產主義，令美國放下戒心"], ans: 2, prize: "80分", info: "70年代初，美國受越戰拖累，在美蘇爭霸中處於守勢。尼克遜政府希望藉著改善對華關係，利用中蘇分裂來牽制蘇聯。" },
         { type: 'MC', q: "1971年，聯合國大會通過第2758號決議，對中國的外交帶來了什麼重大突破？", options: ["美國正式承認中華人民共和國並建交", "中華人民共和國成功取代中華民國（台灣），恢復在聯合國的合法席位", "聯合國宣佈解除對中國的所有經濟禁運", "蘇聯被逐出聯合國安全理事會"], ans: 1, prize: "90分", info: "1971年中國重返聯合國，打破了長期被孤立的局面，國際地位大增，也引發了隨後多國與中國建交的熱潮。" },
         { type: 'MC', q: "1972年美國總統尼克遜訪華，雙方簽署了具有歷史意義的《中美聯合公報》（上海公報）。該公報中，美國在台灣問題上作出了什麼關鍵表態？", options: ["承諾立即與台灣斷絕所有關係並撤軍", "聲明支持台灣獨立，但反對武力解決", "認識到（Acknowledge）海峽兩岸都堅持只有一個中國，台灣是中國的一部份", "同意與中國簽訂軍事同盟條約以保護台灣"], ans: 2, prize: "100分", safe: true, info: "美國在公報中表示「認識到」一個中國原則，這是中美關係解凍的政治基礎。但美國並未在當時立刻與台灣斷交（直至1979年才正式建交）。" },
         { type: 'MC', q: "受中美關係解凍的刺激，哪一個亞洲國家在1972年迅速由首相親自訪華，並實現了兩國邦交正常化？", options: ["印度", "日本", "韓國", "越南"], ans: 1, prize: "110分", info: "1972年，受「尼克遜震撼」影響，日本首相田中角榮訪華，中日正式建交，比中美正式建交（1979）還要早。" },
-        // --- 1980年代 ---
         { type: 'MC', q: "1980年代，中國實施「改革開放」，外交方針也隨之調整為「全面外交」（不結盟）。這種轉變的最根本原因是？", options: ["意識到第三世界國家無法提供軍事保護", "為了集中精力進行國內經濟建設，需要一個和平的國際環境及引進外資", "因為蘇聯已經解體，中國不再需要盟友", "為了準備以武力統一台灣，需要避免列強干預"], ans: 1, prize: "120分", info: "80年代鄧小平將國家重心轉向經濟建設。為了吸引外資與技術，中國放棄了「以階級鬥爭為綱」的外交，改行獨立自主的和平外交。" },
         { type: 'MC', q: "1989年，哪一位蘇聯領導人訪華，標誌著中蘇關係在破裂三十年後終於實現「正常化」？", options: ["斯大林 (史太林)", "赫魯曉夫", "勃列日涅夫", "戈爾巴喬夫 (戈巴卓夫)"], ans: 3, prize: "130分", info: "1989年戈爾巴喬夫訪華，中蘇消除了「三大障礙」（蘇軍撤出阿富汗、中蘇邊境撤軍、越南從柬埔寨撤軍），實現關係正常化。" },
         { type: 'MC', q: "回顧建國以來的外交史，雖然政策隨國際局勢不斷變動（一邊倒 → 兩條線 → 一條線 → 全方位），但貫穿其中的最高原則始終是什麼？", options: ["輸出共產主義革命", "維護國家主權與獨立", "尋求與美國的同盟", "爭取聯合國的常任理事國席位"], ans: 1, prize: "140分", info: "無論政策如何轉變，維護國家主權、領土完整及獨立自主，始終是中華人民共和國外交政策的基石。" },
@@ -424,8 +452,8 @@
     ];
 
     const allQuestions = {
-        'S1': s1Questions, // 若需完整功能可將上方 S1 S2 完整題庫貼回
-        'S2': s1Questions, 
+        'S1': s1Questions, 
+        'S2': s2Questions, 
         'DSE': dseQuestions
     };
 
@@ -464,19 +492,21 @@
             rulesBox.innerHTML = `
                 <ul>
                     <li>本題庫專為 <strong>DSE 高中生</strong> 設計，著重歷史概念與分析。</li>
-                    <li>共 <strong>20 題</strong>：包含 15 題 MC 及 <strong>5 題短答概念自我評估題</strong>。</li>
+                    <li>共 <strong>${activeQuestions.length} 題</strong>：包含 15 題 MC 及 <strong>5 題短答概念自我評估題</strong>。</li>
                     <li>短答題請先自行構思要點，再透過 <strong>DSE 評分參考 (Marking Scheme)</strong> 進行自主對卷。</li>
                     <li>附設 50:50、觀眾投票及提示錦囊（短答題不適用）。</li>
                 </ul>
             `;
         } else {
-            titleEl.innerText = "初中歷史大挑戰";
+            let lvlText = level === 'S1' ? "中一級：兩漢歷史" : "中二級：近代中國";
+            titleEl.innerText = lvlText;
             descEl.innerHTML = "考驗你的歷史邏輯與朝代興衰推演能力！";
-            subtitleEl.innerText = "歷史長河";
+            subtitleEl.innerText = "基礎鞏固訓練";
             rulesBox.innerHTML = `
                 <ul>
-                    <li>共 <strong>20 道</strong> 精選進階題，重視因果與邏輯判斷。</li>
-                    <li>設有保險線，附設三大求救錦囊。</li>
+                    <li>共 <strong>${activeQuestions.length} 題</strong> 選擇題，從測驗重點範圍中精選。</li>
+                    <li>設有保險線，答錯若超過保險線仍可獲得底部分數。</li>
+                    <li>附設三大求救錦囊：50:50、觀眾投票、溫習提示。</li>
                 </ul>
             `;
         }
@@ -492,6 +522,9 @@
         document.getElementById('btn-5050').disabled = false;
         document.getElementById('btn-audience').disabled = false;
         document.getElementById('btn-hint').disabled = false;
+        
+        // 更新總題數顯示
+        document.getElementById('total-q-num').innerText = activeQuestions.length;
 
         switchScreen('screen-quiz');
         loadQuestion();
@@ -502,7 +535,7 @@
         const qData = activeQuestions[currentQIndex];
         
         document.getElementById('current-q-num').innerText = currentQIndex + 1;
-        document.getElementById('progress-fill').style.width = `${((currentQIndex) / 20) * 100}%`;
+        document.getElementById('progress-fill').style.width = `${((currentQIndex) / activeQuestions.length) * 100}%`;
         document.getElementById('current-prize').innerText = qData.prize;
         document.getElementById('safe-prize').innerText = currentSafePrize;
         
@@ -593,7 +626,7 @@
 
         if (isPass) {
             if (qData.safe) currentSafePrize = qData.prize;
-            document.getElementById('progress-fill').style.width = `${((currentQIndex + 1) / 20) * 100}%`;
+            document.getElementById('progress-fill').style.width = `${((currentQIndex + 1) / activeQuestions.length) * 100}%`;
             const btnText = currentQIndex < activeQuestions.length - 1 ? "下一題 ➔" : "完成挑戰 🏆";
             
             msgPanel.innerHTML = `
@@ -710,7 +743,7 @@
             if (isCorrect) {
                 btnElement.classList.add('option-correct');
                 if (qData.safe) currentSafePrize = qData.prize;
-                document.getElementById('progress-fill').style.width = `${((currentQIndex + 1) / 20) * 100}%`;
+                document.getElementById('progress-fill').style.width = `${((currentQIndex + 1) / activeQuestions.length) * 100}%`;
 
                 const btnText = currentQIndex < activeQuestions.length - 1 ? "下一題 ➔" : "完成挑戰 🏆";
                 msgPanel.innerHTML = `
@@ -748,7 +781,11 @@
         const title = document.getElementById('end-title');
         const message = document.getElementById('end-message');
         const iconDiv = document.getElementById('end-icon');
-        let levelName = currentLevel === 'DSE' ? 'DSE 歷史論述' : '歷史題庫';
+        
+        let levelName = "";
+        if(currentLevel === 'S1') levelName = "中一級 兩漢歷史";
+        else if(currentLevel === 'S2') levelName = "中二級 滿清入關";
+        else levelName = "DSE 歷史論述";
         
         if (isWin) {
             iconDiv.innerHTML = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
@@ -759,7 +796,7 @@
             iconDiv.innerHTML = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
             iconDiv.style.background = '#FEF3C7'; iconDiv.style.borderColor = '#FDE68A';
             title.innerText = "挑戰止步"; title.style.color = "#B45309";
-            message.innerHTML = `本次挑戰止步於第 ${currentQIndex + 1} 題。<br>你最後獲得的保證分數為：<br><br><span class="font-num" style="display: block; margin-top: 1rem; margin-bottom: 0.5rem; font-size: 2.5rem; color: #1E293B; font-weight: 700;">${currentSafePrize}</span><br>看熟剛才的 Marking Scheme 後再來挑戰吧！`;
+            message.innerHTML = `本次挑戰止步於第 ${currentQIndex + 1} 題。<br>你最後獲得的保證分數為：<br><br><span class="font-num" style="display: block; margin-top: 1rem; margin-bottom: 0.5rem; font-size: 2.5rem; color: #1E293B; font-weight: 700;">${currentSafePrize}</span><br>多看幾次剛才的解說後再來挑戰吧！`;
         }
     }
 </script>
