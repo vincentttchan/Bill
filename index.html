@@ -1,704 +1,909 @@
-import React, { useState, useEffect } from 'react';
-import { Trophy, RefreshCw, CheckCircle2, XCircle, Users, SplitSquareHorizontal, Lightbulb, X, BookOpen, ChevronRight, GraduationCap } from 'lucide-react';
-
-// ==========================================
-// 題庫一：中二級 (共 25 題)
-// ==========================================
-const QUESTIONS_F2 = [
-  // 第一部分：選擇題 (10題)
-  { id: 1, type: 'mcq', stage: '第一階段：選擇題', prize: 1000, q: '努爾哈赤在進攻哪一座城池時，被明朝將領袁崇煥的砲彈擊傷，最終身亡？', options: ['山海關', '寧遠城', '北京城', '盛京'], ans: 1, clue: '這場戰役是明朝在遼東戰場上少有的勝利，袁崇煥因此聲名大噪。', explanation: '根據筆記，努爾哈赤在進攻寧遠城時，遭到明將袁崇煥以火砲擊傷，不久後逝世，其子皇太極繼承其位。' },
-  { id: 2, type: 'mcq', stage: '第一階段：選擇題', prize: 2000, q: '清朝統治者以元朝「速亡」為借鑑，採取恩威並施的手段。下列哪一項措施屬於「高壓政策」而非「懷柔政策」？', options: ['厚待明朝降臣', '嚴禁漢人集會結社', '減輕農民賦役', '重開科舉考試'], ans: 1, clue: '高壓政策的根本目的是為了防範反清力量的集結與叛亂。', explanation: '筆記中提到，嚴禁漢人集會、大興文字獄以及屠城鎮壓，皆屬於清初用以打擊反抗力量的「高壓政策」。' },
-  { id: 3, type: 'mcq', stage: '第一階段：選擇題', prize: 5000, q: '滿清統治者強制實施「薙髮令」的根本政治目的是什麼？', options: ['統一全國服飾標準', '節約梳理頭髮的時間', '消磨漢人的民族意識', '便於八旗兵制管理'], ans: 2, clue: '這是一種從文化和外貌上強迫臣服的手段，當時口號為「留頭不留髮，留髮不留頭」。', explanation: '清初規定漢人必須「薙髮留辮」，透過強迫改變外貌風俗，來削弱漢人的故國認同與反抗意志。' },
-  { id: 4, type: 'mcq', stage: '第一階段：選擇題', prize: 10000, q: '滿清政府將對外貿易視為「加惠遠人」的手段，因此實施諸多限制。下列何者是當時外商在華貿易的唯一合法中介機構？', options: ['總理衙門', '廣州公行', '市舶司', '理藩院'], ans: 1, clue: '這是一個由清政府特許的壟斷性商業組織，洋人不能自由與一般百姓買賣。', explanation: '清政府規定外商只能在廣州「一口通商」，且必須透過特許的「公行」進行貿易，不能自由買賣。' },
-  { id: 5, type: 'mcq', stage: '第一階段：選擇題', prize: 20000, q: '英國發動鴉片戰爭前，曾派馬甘尼和亞美士德等使團來華。雙方談判破裂的最主要表面衝突是什麼？', options: ['關稅稅率的制定權', '鴉片走私的合法化', '割讓沿海島嶼的要求', '覲見皇帝的禮儀之爭'], ans: 3, clue: '英國使節拒絕行中國傳統的最高跪拜禮，導致雙方不歡而散。', explanation: '英國使團爭取平等外交，但不肯向清帝行「三跪九叩」之禮，堅持單膝下跪，引發「禮儀之爭」而宣告失敗。' },
-  { id: 6, type: 'mcq', stage: '第一階段：選擇題', prize: 30000, q: '大量鴉片走私輸入中國，導致白銀大量外流。這對當時中國基層百姓造成的最直接經濟打擊是什麼？', options: ['農業全面停產', '銅錢大幅升值', '銀價急升導致物價高漲', '國庫黃金完全耗盡'], ans: 2, clue: '當時百姓日常交易用銅錢，但繳稅必須折算成白銀，白銀變貴意味著負擔加重。', explanation: '白銀外流引發「銀貴錢賤」，導致銀價急升、物價高漲，實質上加重了平民百姓的賦稅負擔，使民生困苦。' },
-  { id: 7, type: 'mcq', stage: '第一階段：選擇題', prize: 40000, q: '鴉片戰爭爆發的直接導火線，是英國駐華商務總監義律拒絕交出在九龍打死村民的兇手。史稱什麼事件？', options: ['亞羅號事件', '林維喜事件', '馬神父事件', '曹州教案'], ans: 1, clue: '事件以受害的當地村民名字命名，林則徐因此下令驅逐英人並關閉大門。', explanation: '1839年發生林維喜事件，英方拒交兇手，林則徐遂停止中英貿易並驅逐英人，滿清大門再次關閉，最終促使英國出兵。' },
-  { id: 8, type: 'mcq', stage: '第一階段：選擇題', prize: 60000, q: '《南京條約》中，清朝喪失了對英人犯罪的司法管轄權，這項特權稱為什麼？', options: ['領事裁判權', '片面最惠國待遇', '協定關稅權', '租界行政權'], ans: 0, clue: '意思是英國人在中國犯法，只能交由英國的官員來審判，清朝衙門無權過問。', explanation: '「領事裁判權」又稱治外法權，規定英人犯事由英國領事處理，嚴重破壞了中國的司法主權。' },
-  { id: 9, type: 'mcq', stage: '第一階段：選擇題', prize: 80000, q: '鴉片戰爭後，英國發覺取得的貿易利益不如預期，欲擴大在華利益。他們最初提出什麼要求被清廷拒絕，進而醞釀第二次鴉片戰爭？', options: ['全面開放長江流域', '十二年修約', '允許鴉片合法進口', '外國公使駐紮北京'], ans: 1, clue: '英國援引了中美、中法條約中關於「到期可重新談判條款」的規定。', explanation: '英國以「十二年修約」為由，企圖擴大在華利益，遭清廷拒絕後，便開始尋找發動英法聯軍之役的藉口。' },
-  { id: 10, type: 'mcq', stage: '第一階段：選擇題', prize: 100000, q: '在英法聯軍之役中，英、法兩國各自以什麼事件作為出兵的藉口？', options: ['虎門銷煙 / 林維喜事件', '亞羅號事件 / 馬神父事件', '廣州入城事件 / 曹州教案', '義和團運動 / 亞羅號事件'], ans: 1, clue: '英國藉口一艘走私船的國旗被扯下，法國則藉口一名傳教士被殺。', explanation: '筆記記載，英國以「亞羅號事件」為藉口，法國以「馬神父事件」為藉口，兩國聯手發動了英法聯軍之役。' },
-  
-  // 第二部分：人物題 (5題)
-  { id: 11, type: 'text', stage: '第二階段：人物題', prize: 150000, q: '針對女真族的崛起，明朝將領袁崇煥曾是我們的心腹大患。但我繼位後，成功運用「反間計」讓明朝皇帝親手殺了他。我是誰？', ans: ['皇太極'], clue: '我是努爾哈赤的兒子，並將國號改為「清」。', explanation: '皇太極繼承努爾哈赤的地位後，利用崇禎皇帝的多疑，施展反間計成功除掉了鎮守遼東的明將袁崇煥。' },
-  { id: 12, type: 'text', stage: '第二階段：人物題', prize: 200000, q: '我曾是明朝鎮守山海關的總將。面對李自成發動民變攻陷北京、明思宗自縊的局面，我最終選擇降清，並打開關門引清兵入城。我是誰？', ans: ['吳三桂'], clue: '後人常評價我是「衝冠一怒為紅顏」而引狼入室。', explanation: '吳三桂在明朝滅亡後，為對抗李自成的農民軍，選擇向清朝投降，並開山海關讓清軍進城建立政權。' },
-  { id: 13, type: 'text', stage: '第二階段：人物題', prize: 250000, q: '我是清朝的官員。因為我縱容人民排外，導致了「廣州入城事件」，這也成為後來英法聯軍之役爆發的遠因。我是誰？', ans: ['葉名琛'], clue: '我的應對策略常被譏諷為「不戰、不和、不守、不死、不降、不走」。', explanation: '廣東官員葉名琛在面對英國擴大侵略的挑釁時縱容排外，最終引發廣州入城事件，並被英軍俘虜。' },
-  { id: 14, type: 'text', stage: '第二階段：人物題', prize: 300000, q: '面對英國鴉片大量輸入造成的嚴重禍害，我受道光帝之命前往廣州厲行禁煙，並在虎門海灘公開銷毀大量鴉片。我是誰？', ans: ['林則徐'], clue: '我的壯舉展現了中國反抗外來毒品侵略的決心，被譽為民族英雄。', explanation: '林則徐被派往廣州強硬禁煙，不僅沒收外商鴉片並在虎門銷毀，這也引發了後續的中英衝突。' },
-  { id: 15, type: 'text', stage: '第二階段：人物題', prize: 400000, q: '在英法聯軍攻入北京、火燒圓明園的危急時刻，身為大清皇帝的我無法抵禦，只能倉皇逃往熱河避難。我是誰？', ans: ['咸豐', '咸豐帝', '咸豐皇帝', '清文宗'], clue: '我在避難期間病逝於熱河，我的妻子就是後來垂簾聽政的慈禧太后。', explanation: '英法聯軍逼近北京時，咸豐皇帝逃往熱河避暑山莊避難，最終在該地駕崩。' },
-
-  // 第三部分：填充題 (8題)
-  { id: 16, type: 'text', stage: '第三階段：填充題', prize: 450000, q: '滿清創立了將生產與軍事結合的「__________」制度，藉由這種獨特的社會軍事編制，國力日漸強大。', ans: ['八旗', '八旗兵', '八旗兵制', '八旗制度'], clue: '這是努爾哈赤發明的一種以「旗」為單位的軍民合一組織。', explanation: '努爾哈赤創立八旗兵制，平時從事生產，戰時皆為士兵，大大提升了女真族的戰鬥力與凝聚力。' },
-  { id: 17, type: 'text', stage: '第三階段：填充題', prize: 500000, q: '清朝初期為消磨漢人反抗意志，除了大興文字獄與嚴禁集會，更殘酷地實行了「__________」鎮壓，對抵抗的城池進行血腥報復。', ans: ['屠城', '屠城鎮壓'], clue: '歷史上有名的「揚州十日」和「嘉定三屠」就是這種殘酷政策的代表。', explanation: '清軍入關後遭遇漢族激烈反抗，為打擊反清力量，採取了極端高壓的屠城手段來恐嚇與鎮壓。' },
-  { id: 18, type: 'text', stage: '第三階段：填充題', prize: 550000, q: '在滿清統治時期，大量吸食鴉片不僅損害體質，更使得士兵精神頹廢，直接導致「__________」嚴重下降，無力對抗洋人入侵。', ans: ['戰鬥力', '軍隊戰鬥力'], clue: '士兵吸食鴉片後連武器都拿不穩，在戰場上毫無招架之力。', explanation: '鴉片氾濫嚴重削弱了清朝的國防力量，軍隊戰鬥力大幅下降，成為國家面對外敵時的重大隱患。' },
-  { id: 19, type: 'text', stage: '第三階段：填充題', prize: 600000, q: '《南京條約》規定中國除了開放五口通商與割讓香港島外，還必須賠償高達__________萬兩白銀給英國。', ans: ['2100', '二千一百', '2100萬', '二千一百萬'], clue: '數字開頭是2，包含了煙價、商欠和軍費的總和。', explanation: '條約規定賠償洋銀 2100 萬兩，這筆龐大的賠款進一步掏空了清朝國庫，加重了人民負擔。' },
-  { id: 20, type: 'text', stage: '第三階段：填充題', prize: 650000, q: '英國因為經歷了「__________」，以機器力取代人力，產量大增導致內需市場飽和，亟需尋求海外市場。', ans: ['工業革命'], clue: '這是18世紀下半葉發源於英國的重大技術與經濟變革。', explanation: '工業革命使得英國的生產力發生飛躍，為了推銷過剩的工業產品，英國急於打開中國大門。' },
-  { id: 21, type: 'text', stage: '第三階段：填充題', prize: 700000, q: '英國大量購入中國的茶葉、絲綢和瓷器，在貿易上造成了嚴重的貿易逆差，形成了「__________」的局面。', ans: ['入超', '貿易逆差'], clue: '這代表進口的總價值大於出口的總價值，資金呈現單向流出的狀態。', explanation: '由於英國大量購買中國商品，導致對華貿易出現嚴重的「入超」，促使英國後來以輸出鴉片來扭轉虧損。' },
-  { id: 22, type: 'text', stage: '第三階段：填充題', prize: 750000, q: '透過《南京條約》，英國取得了「__________」待遇，規定清朝日後若給予他國任何利益，英國皆可「一體均沾」。', ans: ['最惠國', '片面最惠國', '最惠國待遇'], clue: '這是近代不平等條約中最具破壞力的條款之一，讓侵略者能坐享其成。', explanation: '取得最惠國待遇後，英國不需談判即可自動「共同享有」中國給予其他列強的任何新特權。' },
-  { id: 23, type: 'text', stage: '第三階段：填充題', prize: 800000, q: '英法聯軍攻入北京後，清廷被迫簽訂《北京條約》，除了增加賠款與通商口岸，更割讓了「__________」給英國。', ans: ['九龍半島', '九龍', '九龍半島南部'], clue: '這是繼香港島之後，英國在香港地區取得的第二塊領土。', explanation: '1860年《北京條約》將九龍半島割讓給英國，擴大了英國的殖民勢力範圍。' },
-
-  // 第四部分：時間順序題 (2題)
-  { id: 24, type: 'order', stage: '第四階段：時間順序題', prize: 900000, q: '關於「明清鼎革」的歷史進程，請將下列事件按時間先後次序排列：', 
-    options: ['李自成發動民變攻陷北京，明思宗自縊', '皇太極施展反間計殺害袁崇煥', '努爾哈赤進攻寧遠城被砲傷致死', '吳三桂打開山海關引清兵入城'], 
-    ans: [2, 1, 0, 3],
-    clue: '努爾哈赤死後皇太極繼位並除掉明朝大將；隨後明朝內部崩潰爆發民變（首都淪陷），最後才是吳三桂引兵入關。',
-    explanation: '正確順序：(1)努爾哈赤戰死寧遠 -> (2)皇太極殺袁崇煥 -> (3)李自成攻陷北京 -> (4)吳三桂引清兵入關。'
-  },
-  { id: 25, type: 'order', stage: '第五階段：終極百萬大挑戰', prize: 1000000, q: '【終極百萬大獎題】關於「英法聯軍之役」的爆發與結果，請將下列事件按時間先後排序：', 
-    options: ['清廷戰敗簽訂《北京條約》割讓九龍半島', '葉名琛縱容排外引發「廣州入城事件」', '英法聯軍攻入北京，火燒圓明園', '英國以「十二年修約」為由企圖擴大利益被拒'], 
-    ans: [1, 3, 2, 0],
-    clue: '廣州民眾的排外情緒先給了英國擴張動機，修約失敗後爆發戰爭，首都遭劫難後，最終才簽訂割地條約。',
-    explanation: '正確順序：(1)廣州入城事件 -> (2)英國提出十二年修約遭拒 -> (3)英法聯軍火燒圓明園 -> (4)簽訂《北京條約》。'
-  }
-];
-
-// ==========================================
-// 題庫二：中三級 (共 25 題)
-// ==========================================
-const QUESTIONS_F3 = [
-  // 第一部分：選擇題 (10題)
-  { id: 1, type: 'mcq', stage: '第一階段：選擇題', prize: 1000, q: '在國共內戰中，共產黨最後在哪三大戰役中重挫國軍主力，取得決定性勝利？', options: ['淞滬、徐州、武漢', '遼瀋、淮海、平津', '遼瀋、徐蚌、平津', '淮海、渡江、平津'], ans: 1, clue: '這三場戰役主要發生在東北、華東和華北，幾乎消滅了國軍的精銳部隊。', explanation: '遼瀋、淮海、平津三大戰役是國共內戰中的戰略決戰，共產黨藉此消滅了國民黨軍隊的主力，奠定了建國基礎。' },
-  { id: 2, type: 'mcq', stage: '第一階段：選擇題', prize: 2000, q: '國軍在內戰後期為了取代貶值的「法幣」，改發行了哪一種貨幣，結果直接促使經濟崩潰？', options: ['銀圓券', '交子', '金圓券', '關金券'], ans: 2, clue: '這是一種以黃金為準備金名義發行的貨幣，但因濫發而形同廢紙。', explanation: '國民政府在內戰末期強行發行「金圓券」取代法幣，但因未有足夠儲備且惡性通貨膨脹，導致經濟徹底崩潰，民心盡失。' },
-  { id: 3, type: 'mcq', stage: '第一階段：選擇題', prize: 5000, q: '建國初期，新中國推行「鎮反」、「三反」、「五反」等政治運動。其中「三反」主要是針對哪一類人？', options: ['資本家', '地主', '國民黨殘餘力量', '黨政機關內的官僚'], ans: 3, clue: '這場運動的口號是反貪污、反浪費、反官僚主義，矛頭指向體制內。', explanation: '「三反」運動主要是針對黨政機關內部的貪污舞弊與官僚作風；而「五反」才是針對資本家。' },
-  { id: 4, type: 'mcq', stage: '第一階段：選擇題', prize: 10000, q: '在「大躍進」中，政府在農業上提出以甚麼為綱？', options: ['鋼', '鐵', '糧', '棉'], ans: 2, clue: '民以食為天，這項政策要求全國集中力量提高農作物的產量。', explanation: '大躍進時期，農業上提出「以糧為綱」，卻因此引發了各地的浮誇風，競相虛報「畝產萬斤」，最終導致嚴重饑荒。' },
-  { id: 5, type: 'mcq', stage: '第一階段：選擇題', prize: 20000, q: '在三面紅旗運動時期，全國各地組織了甚麼制度來實行集體所有制，卻導致人民積極性下降？', options: ['土地改革', '三自一包', '人民公社', '第一個五年計劃'], ans: 2, clue: '這是一種「政社合一」的基層組織，標榜「一大二公」，大家都在公共食堂吃飯。', explanation: '「人民公社化運動」強行將農業生產合作社合併，實行高度集中的平均分配，嚴重打擊了農民的生產積極性。' },
-  { id: 6, type: 'mcq', stage: '第一階段：選擇題', prize: 30000, q: '文化大革命期間，號召全國大、中學生停課鬧革命，他們組織了甚麼團體到處進行批鬥和抄家？', options: ['知青', '走資派', '黑五類', '紅衛兵'], ans: 3, clue: '他們多佩戴紅色袖章，高呼「造反有理」，是文革初期的急先鋒。', explanation: '毛澤東號召青年學生組織「紅衛兵」，他們在全國各地進行大串聯、批鬥和破壞，造成了極大的社會動亂。' },
-  { id: 7, type: 'mcq', stage: '第一階段：選擇題', prize: 40000, q: '文化大革命期間提出的「破四舊」運動，紅衛兵主要破壞了甚麼事物？', options: ['傳統古蹟文物及圖書字畫', '重工業生產設施', '蘇聯的領事館', '農村的農田'], ans: 0, clue: '這場運動將舊思想、舊文化、舊風俗、舊習慣視為毒草。', explanation: '紅衛兵以「破四舊」為名，瘋狂破壞中國傳統的古蹟、廟宇、文物、圖書和字畫，對歷史遺產造成無法彌補的損失。' },
-  { id: 8, type: 'mcq', stage: '第一階段：選擇題', prize: 60000, q: '文革中，政府號召青年往農村去接受「貧下中農再教育」的運動稱為什麼？', options: ['全民大煉鋼', '上山下鄉', '土地改革', '三面紅旗'], ans: 1, clue: '為了解散城市中狂熱的紅衛兵，將他們遣送至偏遠的山區與農村勞動。', explanation: '「上山下鄉」運動將大量城市知識青年送到農村勞動，不僅影響了一代人的青春，更造成了人才和教育的嚴重斷層。' },
-  { id: 9, type: 'mcq', stage: '第一階段：選擇題', prize: 80000, q: '根據統計，十年文革動亂對中國經濟造成重大破壞，使得國民收入損失約多少元？', options: ['2000億元', '3000億元', '4000億元', '5000億元'], ans: 3, clue: '這是一個極其龐大的數字，字首是5。', explanation: '十年文革對中國經濟造成毀滅性打擊，國家計委估計國民收入損失高達5000億元人民幣。' },
-  { id: 10, type: 'mcq', stage: '第一階段：選擇題', prize: 100000, q: '文革期間因教育停頓，中國出現大量文盲。當時文盲約佔全國總人口數的比例是多少？', options: ['近五分之一', '近四分之一', '近三分之一', '近二分之一'], ans: 1, clue: '因為「讀書無用論」盛行與學校停辦，大約每四個人之中就有一個不識字。', explanation: '文革期間教育系統全面癱瘓，導致中國出現大量文盲和半文盲，約佔當時全國總人口的近四分之一（超過兩億人）。' },
-
-  // 第二部分：人物題 (5題)
-  { id: 11, type: 'text', stage: '第二階段：人物題', prize: 150000, q: '我是新中國的締造者；但在大躍進挫敗後退居二線，為了重奪權力及防範資本主義，我發動群眾展開了文化大革命。我是誰？', ans: ['毛澤東'], clue: '我的肖像至今仍懸掛在天安門城樓上。', explanation: '毛澤東領導中共建國，晚年發動了影響深遠的「大躍進」與「文化大革命」，對中國近現代發展產生了極大影響。' },
-  { id: 12, type: 'text', stage: '第二階段：人物題', prize: 200000, q: '我在三年困難時期上場處理經濟危機，並推行「三自一包」。我指出危機是「七分人禍」，結果在文革中被指為最大的「走資派」並迫害致死。我是誰？', ans: ['劉少奇'], clue: '我曾接替毛澤東出任中華人民共和國國家主席。', explanation: '劉少奇推行務實的經濟調整政策成功挽救了經濟，卻因此與毛澤東產生路線分歧，最終成為文革中最大的政治受害者。' },
-  { id: 13, type: 'text', stage: '第二階段：人物題', prize: 250000, q: '我曾被視為毛澤東的親密戰友與接班人，但後來因被猜忌而策劃武裝政變。事敗後我乘飛機逃亡蘇聯，最終在蒙古墜機身亡。我是誰？', ans: ['林彪'], clue: '這起震驚中外的墜機事件史稱「九一三事件」。', explanation: '林彪在文革中權勢極度膨脹，與毛澤東關係破裂後企圖發動政變奪權，失敗後逃亡途中命喪溫都爾汗。' },
-  { id: 14, type: 'text', stage: '第二階段：人物題', prize: 300000, q: '我在毛澤東離世後成為他的繼承人。我果斷下令逮捕了江青等「四人幫」，結束了長達十年的文化大革命。我是誰？', ans: ['華國鋒'], clue: '毛澤東生前曾對我說過：「你辦事，我放心。」', explanation: '華國鋒在1976年接任黨政軍最高領導職務，並迅速粉碎了「四人幫」集團，標誌著十年文革動亂的終結。' },
-  { id: 15, type: 'text', stage: '第二階段：人物題', prize: 400000, q: '我是著名的歷史學家兼北京市副市長。因為我發表了《海瑞罷官》一劇而在文革前夕受到猛烈攻擊，成為文革爆發的導火線。我是誰？', ans: ['吳晗'], clue: '姚文元寫了一篇名為《評新編歷史劇...》的文章，將矛頭直接指向了我。', explanation: '吳晗創作的《海瑞罷官》被毛澤東等人解讀為「借古諷今」、為彭德懷翻案，對其的批判拉開了文化大革命的序幕。' },
-
-  // 第三部分：填充題 (8題)
-  { id: 16, type: 'text', stage: '第三階段：填充題', prize: 450000, q: '抗日戰爭後，國共兩黨在蘇聯和美國的推動下舉行「__________」，並簽訂了《雙十協定》，但最終未能阻止內戰爆發。', ans: ['重慶談判'], clue: '這場談判發生在抗戰時期的陪都，毛澤東親自飛往當地與蔣介石會面。', explanation: '1945年國共兩黨為避免內戰舉行了重慶談判，雖達成《雙十協定》，但雙方在軍隊和政權問題上仍有根本分歧。' },
-  { id: 17, type: 'text', stage: '第三階段：填充題', prize: 500000, q: '中華人民共和國建國初期為恢復經濟發動「__________運動」，沒收地主土地分給無地及少地的農民，確立了強大的民眾基礎。', ans: ['土地改革', '土改'], clue: '這場運動徹底消滅了中國延續兩千多年的封建土地所有制。', explanation: '建國初期的「土地改革」實現了「耕者有其田」，讓數億無地農民獲得土地，極大鞏固了新政權在農村的根基。' },
-  { id: 18, type: 'text', stage: '第三階段：填充題', prize: 550000, q: '新中國初期仿效蘇聯推行「__________」，集中全國力量優先發展重工業，為國家的工業化奠基。', ans: ['第一個五年計劃', '一五計劃'], clue: '這是一項以五年為期、帶有濃烈計劃經濟色彩的國家發展戰略。', explanation: '中國自1953年起實施「第一個五年計劃」，重點發展鋼鐵、煤炭等基礎重工業，改變了中國工業落後的面貌。' },
-  { id: 19, type: 'text', stage: '第三階段：填充題', prize: 600000, q: '在「大躍進」中，政府盲目追求鋼鐵產量，發動全民「__________」，卻因技術落後造成大量鋼材不合規格與資源浪費。', ans: ['大煉鋼', '煉鋼'], clue: '當時各地建起了無數的土高爐，甚至連農民家裡的鐵鍋都被砸了拿去熔掉。', explanation: '大煉鋼運動不僅產出了大量無用的廢鋼，更嚴重破壞了生態環境，並抽調了大量農業勞動力，導致農田荒廢。' },
-  { id: 20, type: 'text', stage: '第三階段：填充題', prize: 650000, q: '大躍進時期，農業上因官員為了取悅中央而大肆「__________」豐收數字，導致政策失誤與隨之而來的三年困難時期。', ans: ['虛報', '浮誇', '虛報產量'], clue: '當時各地競相放出「畝產萬斤」甚至十萬斤的「衛星」，完全脫離常理。', explanation: '在政治狂熱下，地方官員的「浮誇風」虛報糧食產量，導致國家徵購過多，農民無糧可吃，爆發了嚴重的大饑荒。' },
-  { id: 21, type: 'text', stage: '第三階段：填充題', prize: 700000, q: '面對大饑荒，劉少奇、鄧小平等人上場推行「__________」政策，允許農民有自留地和自由市場，成功讓經濟復甦。', ans: ['三自一包'], clue: '這四個字的政策核心是放寬管制、包產到戶，極大恢復了農民的生產積極性。', explanation: '「三自一包」（自留地、自由市場、自負盈虧、包產到戶）是三年困難時期後，務實派為恢復國民經濟而採取的有效經濟調整政策。' },
-  { id: 22, type: 'text', stage: '第三階段：填充題', prize: 750000, q: '毛澤東將劉少奇等人的經濟政策視為資本主義的復辟，決心清除黨內的「__________」，並正式展開文化大革命。', ans: ['走資派', '資本主義道路的當權派'], clue: '這是文革中最常見的政治罪名，全稱為「走資本主義道路的當權派」。', explanation: '毛澤東認為黨內高層出現了企圖改變社會主義方向的「走資派」，因而發動文革進行政治大清洗。' },
-  { id: 23, type: 'text', stage: '第三階段：填充題', prize: 800000, q: '文革十年對教育造成巨大破壞，大學停辦、知識分子被打倒，這使得中國形成了嚴重的文化斷層、科技斷層及「__________」斷層。', ans: ['人才'], clue: '青年的學業被迫中斷，國家在各行各業出現了青黃不接的危機。', explanation: '文革對教育體系的摧殘，導致整整一代人失去接受高等教育的機會，造成嚴重的人才斷層，阻礙了中國的現代化進程。' },
-
-  // 第四部分：時間順序題 (1題)
-  { id: 24, type: 'order', stage: '第四階段：時間順序題', prize: 900000, q: '關於「新中國建國初期的政策演變」，請將下列事件按歷史發生先後次序排列：', 
-    options: ['推行「第一個五年計劃」優先發展重工業', '經歷三年困難時期後，推行「三自一包」', '發動「土地改革運動」沒收地主土地', '提出「大躍進」與「人民公社」等三面紅旗運動'], 
-    ans: [2, 0, 3, 1],
-    clue: '先分土地給農民鞏固政權，接著開始搞計劃經濟，然後腦子發熱搞出大躍進，最後被迫收拾經濟殘局。',
-    explanation: '正確順序：(1)土地改革(1950) -> (2)一五計劃(1953) -> (3)三面紅旗大躍進(1958) -> (4)三自一包調整經濟(1960年代初)。'
-  },
-  
-  // 第五部分：範圍題 (1題)
-  { id: 25, type: 'mcq', stage: '第五階段：終極百萬範圍題', prize: 1000000, q: '【終極百萬大獎題】根據統計，文革動亂對經濟造成極其嚴重的破壞，估計使國民收入損失約5000億元。這個損失數字，大約相當於建國以來全國基本建設投資總額的百分之幾的範圍內？', 
-    options: ['35% - 45% 之間', '55% - 65% 之間', '75% - 85% 之間', '90% - 100% 之間'], 
-    ans: 2, 
-    clue: '這是一個令人震驚的比例，它意味著建國以來幾乎五分之四的建設投資都付諸流水。', 
-    explanation: '資料指出，5000億元的巨大經濟損失，大約相當於建國以來全國基本建設投資總額的 80%，因此答案落在 75% - 85% 之間。這反映了文革對國家發展的毀滅性打擊。' 
-  }
-];
-
-// ==========================================
-// 主程式與遊戲邏輯
-// ==========================================
-
-// 生成 25 階的固定獎金清單供右側 UI 顯示使用
-const PRIZES = [...QUESTIONS_F2].reverse().map(q => q.prize);
-
-export default function App() {
-  const [gameState, setGameState] = useState('start'); // 遊戲狀態： 'start', 'playing', 'gameover', 'victory'
-  const [activeQuestions, setActiveQuestions] = useState(QUESTIONS_F2); // 記錄目前選擇的題庫
-  const [currentIndex, setCurrentIndex] = useState(0); // 當前題目索引 (0 到 24)
-  const [earnedPrize, setEarnedPrize] = useState(0); // 累積獎金
-  
-  // 答題與核對狀態
-  const [checkState, setCheckState] = useState('idle'); // 'idle', 'checking', 'correct', 'wrong'
-  const [selectedAns, setSelectedAns] = useState(null); 
-  const [textInput, setTextInput] = useState(''); 
-  const [orderSelection, setOrderSelection] = useState([]); 
-  const [revealedAns, setRevealedAns] = useState(null);
-
-  // 提示機制：每局只能各用一次
-  const [lifelines, setLifelines] = useState({ fiftyFifty: true, askAudience: true, hint: true });
-  
-  // 提示機制產生的暫時狀態
-  const [hiddenOptions, setHiddenOptions] = useState([]); 
-  const [audienceData, setAudienceData] = useState(null); 
-  const [showHintModal, setShowHintModal] = useState(false);
-
-  const currentQ = activeQuestions[currentIndex];
-
-  // 啟動遊戲
-  const startGame = (questionSet) => {
-    setActiveQuestions(questionSet);
-    setGameState('playing');
-    setCurrentIndex(0);
-    setEarnedPrize(0);
-    setLifelines({ fiftyFifty: true, askAudience: true, hint: true });
-    resetInputs();
-  };
-
-  // 重置答題區輸入狀態
-  const resetInputs = () => {
-    setCheckState('idle');
-    setSelectedAns(null);
-    setTextInput('');
-    setOrderSelection([]);
-    setRevealedAns(null);
-    setHiddenOptions([]);
-    setAudienceData(null);
-    setShowHintModal(false);
-  };
-
-  // ----------------------------------
-  // 提示機制功能區
-  // ----------------------------------
-  const useFiftyFifty = () => {
-    if (!lifelines.fiftyFifty || currentQ.type !== 'mcq' || checkState !== 'idle') return;
-    const correctIdx = currentQ.ans;
-    const wrongIndices = [0, 1, 2, 3].filter(i => i !== correctIdx);
-    const toHide = wrongIndices.sort(() => 0.5 - Math.random()).slice(0, 2); // 隨機隱藏兩個錯誤選項
-    setHiddenOptions(toHide);
-    setLifelines(prev => ({ ...prev, fiftyFifty: false }));
-  };
-
-  const useAskAudience = () => {
-    if (!lifelines.askAudience || currentQ.type !== 'mcq' || checkState !== 'idle') return;
-    const correctIdx = currentQ.ans;
-    let remaining = 100;
-    const stats = {};
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>百萬富翁歷史大挑戰 - 完整題庫版</title>
     
-    // 保證正確答案獲得較高機率的票數 (45% ~ 75%)
-    const correctPct = Math.floor(Math.random() * 30) + 45;
-    stats[correctIdx] = correctPct;
-    remaining -= correctPct;
+    <!-- 引入 Tailwind CSS 進行快速樣式設計 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 FontAwesome 圖示庫 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 引入 React 與 ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- 引入 Babel 用於在瀏覽器端編譯 JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    const availableWrong = [0, 1, 2, 3].filter(i => i !== correctIdx && !hiddenOptions.includes(i));
-    availableWrong.forEach((idx, i) => {
-      if (i === availableWrong.length - 1) {
-        stats[idx] = remaining; // 剩餘票數全給最後一個選項
-      } else {
-        const pct = Math.floor(Math.random() * (remaining - 5)); 
-        stats[idx] = pct;
-        remaining -= pct;
-      }
-    });
-
-    setAudienceData(stats);
-    setLifelines(prev => ({ ...prev, askAudience: false }));
-  };
-
-  const useHint = () => {
-    if (!lifelines.hint || checkState !== 'idle') return;
-    setShowHintModal(true);
-    setLifelines(prev => ({ ...prev, hint: false }));
-  };
-
-  // ----------------------------------
-  // 答題核對邏輯區
-  // ----------------------------------
-  const handleMCQSubmit = (index) => {
-    if (checkState !== 'idle') return;
-    setSelectedAns(index);
-    verifyAnswer(index === currentQ.ans, currentQ.ans);
-  };
-
-  const handleTextSubmit = (e) => {
-    e.preventDefault();
-    if (checkState !== 'idle' || !textInput.trim()) return;
-    // 去除空白進行比對
-    const cleanInput = textInput.trim().replace(/\s+/g, '');
-    const isCorrect = currentQ.ans.some(ans => cleanInput.includes(ans) || ans.includes(cleanInput));
-    verifyAnswer(isCorrect, currentQ.ans[0]);
-  };
-
-  const handleOrderSelect = (index) => {
-    if (checkState !== 'idle') return;
-    if (orderSelection.includes(index)) {
-      setOrderSelection(orderSelection.filter(i => i !== index)); // 取消選取
-    } else {
-      const newSelection = [...orderSelection, index];
-      setOrderSelection(newSelection);
-      // 當選滿四個項目時，自動觸發檢查
-      if (newSelection.length === 4) {
-        const isCorrect = JSON.stringify(newSelection) === JSON.stringify(currentQ.ans);
-        verifyAnswer(isCorrect, currentQ.ans);
-      }
-    }
-  };
-
-  const verifyAnswer = (isCorrect, correctValue) => {
-    setCheckState('checking');
-    setTimeout(() => {
-      setCheckState(isCorrect ? 'correct' : 'wrong');
-      setRevealedAns(correctValue);
-      if (isCorrect) {
-        setEarnedPrize(currentQ.prize);
-      }
-    }, 2000); // 模擬緊張的兩秒核對時間
-  };
-
-  const handleNext = () => {
-    if (checkState === 'correct') {
-      if (currentIndex < activeQuestions.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-        resetInputs();
-      } else {
-        // 全破關
-        setGameState('victory');
-      }
-    } else if (checkState === 'wrong') {
-      // 答錯出局
-      setGameState('gameover');
-    }
-  };
-
-  // ==========================================
-  // 子元件：提示線索的浮動視窗
-  // ==========================================
-  const HintModal = () => {
-    if (!showHintModal || !currentQ) return null;
-
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300 px-4">
-        <div className="bg-white border border-slate-100 p-8 rounded-2xl max-w-md w-full shadow-2xl relative">
-          <button onClick={() => setShowHintModal(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors">
-            <X className="w-6 h-6" />
-          </button>
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-amber-50 rounded-full text-amber-500">
-              <Lightbulb className="w-8 h-8" />
-            </div>
-            <h3 className="text-xl font-serif text-amber-600">智囊團線索</h3>
-          </div>
-          <p className="text-lg text-slate-700 leading-relaxed tracking-wide font-light">{currentQ.clue}</p>
-          <button onClick={() => setShowHintModal(false)} className="mt-8 w-full py-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 rounded-lg transition-all tracking-widest text-sm uppercase">
-            我知道了
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  // ==========================================
-  // 畫面 1：開始畫面 (級別選擇)
-  // ==========================================
-  if (gameState === 'start') {
-    return (
-      <div className="min-h-screen bg-[#FAFAFA] text-slate-900 flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
-        {/* 背景裝飾光暈 */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-300/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <style>
+        body { font-family: 'PingFang HK', 'Microsoft JhengHei', sans-serif; background-color: #f8fafc; }
+        .font-serif { font-family: 'PMingLiU', 'MingLiU', serif; }
         
-        <div className="relative z-10 w-full max-w-5xl space-y-12">
-          
-          <div className="text-center space-y-6">
-            <div className="inline-block relative">
-              <Trophy className="w-20 h-20 text-amber-500 mx-auto" strokeWidth={1.5} />
-              <div className="absolute inset-0 bg-amber-400/20 blur-2xl rounded-full"></div>
-            </div>
-            <div>
-              <p className="tracking-[0.3em] uppercase text-amber-600/80 text-sm font-medium mb-3">The Millionaire Challenge</p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-slate-900 pb-2">
-                百萬富翁歷史大挑戰
-              </h1>
-            </div>
-            <p className="text-lg text-slate-500 font-light">請選擇您的挑戰級別與歷史紀元，最高獎金 <span className="text-amber-600 font-medium">$1,000,000</span>！</p>
-          </div>
-          
-          {/* 級別選擇卡片 */}
-          <div className="grid md:grid-cols-2 gap-6 mt-10">
-            {/* 中二級 按鈕 */}
-            <button 
-              onClick={() => startGame(QUESTIONS_F2)}
-              className="group text-left p-8 rounded-3xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur-md hover:border-amber-400 hover:shadow-[0_0_40px_rgba(212,175,55,0.15)] transition-all duration-500 relative overflow-hidden"
-            >
-              <div className="absolute right-0 top-0 w-32 h-32 bg-amber-100/30 rounded-full blur-3xl group-hover:bg-amber-200/50 transition-colors"></div>
-              <div className="flex justify-between items-start mb-6 relative z-10">
-                <div className="p-4 bg-slate-50 text-slate-600 rounded-2xl group-hover:bg-amber-50 group-hover:text-amber-600 transition-colors">
-                  <BookOpen className="w-8 h-8" />
-                </div>
-                <span className="px-4 py-1.5 bg-slate-100 text-slate-500 text-sm font-medium rounded-full tracking-wider group-hover:bg-amber-100 group-hover:text-amber-700 transition-colors">25 QUESTS</span>
-              </div>
-              <h2 className="text-2xl font-serif text-slate-900 mb-2 relative z-10">中二級：滿清入關及近代中國</h2>
-              <p className="text-slate-500 font-light leading-relaxed mb-8 relative z-10">從努爾哈赤建國、清朝高壓統治，一路跨越至鴉片戰爭與英法聯軍之役。考驗您對帝國衰亡的認知。</p>
-              <div className="flex items-center text-amber-600 font-medium tracking-widest text-sm uppercase relative z-10 group-hover:translate-x-2 transition-transform">
-                展開挑戰 <ChevronRight className="w-4 h-4 ml-1" />
-              </div>
-            </button>
+        /* 自定義捲軸以確保獎金表在多題時能順暢滑動 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-            {/* 中三級 按鈕 */}
-            <button 
-              onClick={() => startGame(QUESTIONS_F3)}
-              className="group text-left p-8 rounded-3xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur-md hover:border-blue-400 hover:shadow-[0_0_40px_rgba(59,130,246,0.15)] transition-all duration-500 relative overflow-hidden"
-            >
-              <div className="absolute right-0 top-0 w-32 h-32 bg-blue-100/30 rounded-full blur-3xl group-hover:bg-blue-200/50 transition-colors"></div>
-              <div className="flex justify-between items-start mb-6 relative z-10">
-                <div className="p-4 bg-slate-50 text-slate-600 rounded-2xl group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                  <GraduationCap className="w-8 h-8" />
-                </div>
-                <span className="px-4 py-1.5 bg-slate-100 text-slate-500 text-sm font-medium rounded-full tracking-wider group-hover:bg-blue-100 group-hover:text-blue-700 transition-colors">25 QUESTS</span>
-              </div>
-              <h2 className="text-2xl font-serif text-slate-900 mb-2 relative z-10">中三級：國共內戰及建國發展</h2>
-              <p className="text-slate-500 font-light leading-relaxed mb-8 relative z-10">重溫三大戰役、新中國建國初期的經濟政策演變，乃至十年文化大革命的始末與深刻影響。</p>
-              <div className="flex items-center text-blue-600 font-medium tracking-widest text-sm uppercase relative z-10 group-hover:translate-x-2 transition-transform">
-                展開挑戰 <ChevronRight className="w-4 h-4 ml-1" />
-              </div>
-            </button>
-          </div>
+        /* 遊戲專用動畫 */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
+        }
+        .correct-ans-glow { animation: pulse-glow 2s infinite; border-color: #34d399 !important; background-color: #ecfdf5 !important; }
+        .wrong-ans-glow { border-color: #f87171 !important; background-color: #fef2f2 !important; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
 
-        </div>
-      </div>
-    );
-  }
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-  // ==========================================
-  // 畫面 2：遊戲結束與結算畫面
-  // ==========================================
-  if (gameState === 'gameover' || gameState === 'victory') {
-    const isVictory = gameState === 'victory';
-    return (
-      <div className="min-h-screen bg-[#FAFAFA] text-slate-900 flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[120px] pointer-events-none ${isVictory ? 'bg-amber-400/20' : 'bg-red-400/10'}`}></div>
-        
-        <div className="relative z-10 max-w-2xl text-center space-y-10 p-12 bg-white/70 backdrop-blur-xl border border-white/50 shadow-xl shadow-slate-200/50 rounded-3xl">
-          {isVictory ? (
-            <Trophy className="w-24 h-24 text-amber-500 mx-auto" strokeWidth={1} />
-          ) : (
-            <XCircle className="w-24 h-24 text-red-500/80 mx-auto" strokeWidth={1} />
-          )}
-          
-          <h1 className="text-4xl md:text-5xl font-serif text-slate-900">
-            {isVictory ? '歷史傳奇，百萬富翁' : '歷史的長河在此停歇'}
-          </h1>
-          
-          <div className="space-y-2">
-            <p className="text-slate-500 uppercase tracking-[0.2em] text-sm">最終獲得獎金</p>
-            <p className="text-6xl md:text-7xl font-light text-amber-500 tracking-tight">
-              ${earnedPrize.toLocaleString()}
-            </p>
-          </div>
+        // ==========================================
+        // 題庫一：中二級 (共 25 題)
+        // 根據上傳筆記《s2 答案.pdf》精準校對
+        // ==========================================
+        const QUESTIONS_F2 = [
+            { 
+                id: 1, type: 'mcq', stage: '第一階段：選擇題', prize: 1000, 
+                q: '滿人原為女真族，最終是由誰統一了各部族，建立後金政權？', 
+                options: ['皇太極', '努爾哈赤', '康熙', '吳三桂'], 
+                ans: 1, clue: '他是清朝的奠基者，創立了將生產與軍事結合的制度。', 
+                explanation: '根據筆記，滿人原為女真族，由努爾哈赤統一各部族，建立後金。' 
+            },
+            { 
+                id: 2, type: 'mcq', stage: '第一階段：選擇題', prize: 2000, 
+                q: '滿清創立了哪一種將「生產和軍事結合」的制度，使國力日漸強大？', 
+                options: ['府兵制', '保甲制', '八旗兵制', '綠營兵制'], 
+                ans: 2, clue: '這是一種以顏色旗幟為單位的全民皆兵制度。', 
+                explanation: '努爾哈赤創立了八旗兵制，將軍事與社會生產緊密結合，大幅提升女真族的戰鬥力。' 
+            },
+            { 
+                id: 3, type: 'mcq', stage: '第一階段：選擇題', prize: 5000, 
+                q: '努爾哈赤在進攻哪一座城池時，遭到明朝將領袁崇煥以火砲擊傷，最終身亡？', 
+                options: ['北京城', '山海關', '錦州城', '寧遠城'], 
+                ans: 3, clue: '這場戰役是明朝在遼東戰場的罕見大勝，城名有「安寧遼遠」之意。', 
+                explanation: '筆記指出，在進攻寧遠城時，努爾哈赤被明將領袁崇煥以砲彈擊傷後身亡。' 
+            },
+            { 
+                id: 4, type: 'mcq', stage: '第一階段：選擇題', prize: 10000, 
+                q: '努爾哈赤死後，其子皇太極利用什麼計謀，成功借明朝皇帝之手殺害了袁崇煥？', 
+                options: ['空城計', '苦肉計', '反間計', '調虎離山計'], 
+                ans: 2, clue: '他利用了明思宗多疑的性格，散佈袁崇煥叛敵的假消息。', 
+                explanation: '皇太極繼位後，施展「反間計」讓明思宗誤信袁崇煥通敵，最終將其處死。' 
+            },
+            { 
+                id: 5, type: 'mcq', stage: '第一階段：選擇題', prize: 20000, 
+                q: '明末政治敗壞、人民困苦，誰利用時機號召人民發動民變攻入北京，導致明思宗自縊？', 
+                options: ['張獻忠', '吳三桂', '李自成', '洪秀全'], 
+                ans: 2, clue: '他被稱為「闖王」，其部隊被稱為大順軍。', 
+                explanation: '李自成發動農民起義，攻陷首都北京，明思宗於煤山自縊，明朝滅亡。' 
+            },
+            { 
+                id: 6, type: 'mcq', stage: '第一階段：選擇題', prize: 30000, 
+                q: '明朝滅亡後，哪一位山海關守將選擇降清，並開關讓清兵進城？', 
+                options: ['袁崇煥', '吳三桂', '史可法', '鄭成功'], 
+                ans: 1, clue: '後人常說他是「衝冠一怒為紅顏」而引狼入室。', 
+                explanation: '山海關守將吳三桂為了對抗李自成，決定降清並打開山海關引清兵入城，建立滿清政權。' 
+            },
+            { 
+                id: 7, type: 'mcq', stage: '第一階段：選擇題', prize: 40000, 
+                q: '清朝以元朝的歷史為借鑑，避免重蹈元代「什麼」的覆轍，因此採取恩威並施的統治手段？', 
+                options: ['積貧積弱', '諸侯割據', '速亡', '宦官專政'], 
+                ans: 2, clue: '元朝因為純粹使用高壓統治，很快就滅亡了，這兩個字形容滅亡得很快。', 
+                explanation: '清朝鑑於元代只以高壓作統治激起漢人反抗終致「速亡」，因此採取高壓與懷柔並行的政策。' 
+            },
+            { 
+                id: 8, type: 'mcq', stage: '第一階段：選擇題', prize: 60000, 
+                q: '下列哪一項屬於清朝入關後，為了打擊反清力量而實行的「高壓政策」？', 
+                options: ['重開科舉', '厚待降臣', '減輕賦役', '大興文字獄'], 
+                ans: 3, clue: '這項政策是從文人的詩詞文章中挑剔字眼，羅織罪名。', 
+                explanation: '屠城鎮壓、嚴禁漢人集會以及「大興文字獄」皆屬於清朝防範漢人叛亂的高壓政策。' 
+            },
+            { 
+                id: 9, type: 'mcq', stage: '第一階段：選擇題', prize: 80000, 
+                q: '清朝規定漢人必須跟從滿清風俗，實行哪一項法令以消磨漢人的民族意識？', 
+                options: ['禁海令', '薙髮令', '指婚令', '遷界令'], 
+                ans: 1, clue: '當時的口號是「留頭不留髮，留髮不留頭」。', 
+                explanation: '清政府實行「薙髮令」，強迫漢人薙髮留辮，以此作為臣服的象徵，消磨漢人的反抗意志。' 
+            },
+            { 
+                id: 10, type: 'mcq', stage: '第一階段：選擇題', prize: 100000, 
+                q: '為了爭取漢人士大夫與平民的支持，清朝推行了「懷柔政策」。下列何者「不屬於」懷柔政策？', 
+                options: ['厚葬明思宗', '重開科舉', '嚴禁漢人集會', '減輕賦役'], 
+                ans: 2, clue: '這是一個限制人民自由的負面政策，不可能是用來安撫人心的懷柔手段。', 
+                explanation: '「嚴禁漢人集會」是為了防止叛亂的「高壓政策」；其餘三項皆為安撫漢人的「懷柔政策」。' 
+            },
+            { 
+                id: 11, type: 'text', stage: '第二階段：人物與名詞', prize: 150000, 
+                q: '我受道光帝之命前往廣州厲行禁煙，並在虎門海灘公開銷毀了大量英商的鴉片，展現反抗外敵決心。我是誰？', 
+                ans: ['林則徐'], clue: '我是近代中國著名的民族英雄，曾寫下「苟利國家生死以，豈因禍福避趨之」。', 
+                explanation: '林則徐在廣州雷厲風行地禁煙，並發動了著名的「虎門銷煙」。' 
+            },
+            { 
+                id: 12, type: 'text', stage: '第二階段：人物與名詞', prize: 200000, 
+                q: '在英法聯軍之役中，身為兩廣總督的我，因對洋人採取「不戰不和」的態度並縱容排外，最終導致廣州淪陷並被俘。我是誰？', 
+                ans: ['葉名琛'], clue: '我的應對策略被世人譏諷為「六不總督」（不戰、不和、不守、不死、不降、不走）。', 
+                explanation: '廣東官員葉名琛處理外交危機失當，激化了矛盾，成為英法聯軍之役爆發的遠因。' 
+            },
+            { 
+                id: 13, type: 'text', stage: '第二階段：人物與名詞', prize: 250000, 
+                q: '清朝初年實行嚴厲的高壓統治，在軍事上更對頑強抵抗的城市（如揚州、嘉定）實行殘酷的「________」鎮壓，以震懾漢人。', 
+                ans: ['屠城'], clue: '這是一種極度血腥的手段，殺光城內的軍民。', 
+                explanation: '筆記記載，清入關後遇上漢族重大反抗，為打擊反清力量，實行了殘酷的「屠城鎮壓」。' 
+            },
+            { 
+                id: 14, type: 'text', stage: '第二階段：人物與名詞', prize: 300000, 
+                q: '鴉片戰爭前，清朝實施嚴格貿易限制，外商只能在廣州與官方特許的壟斷商業組織進行交易，這個組織稱為________。', 
+                ans: ['公行', '廣州公行', '十三行'], clue: '這是一個由朝廷指定的商人行會，洋人不能直接與平民做生意。', 
+                explanation: '清政府限制外商只能透過「廣州公行」進行交易，成為洋人亟欲打破的貿易障礙。' 
+            },
+            { 
+                id: 15, type: 'text', stage: '第二階段：人物與名詞', prize: 400000, 
+                q: '英國在發動鴉片戰爭前，曾因大量購買中國的茶葉和絲綢，導致嚴重的貿易逆差，這種情況在經濟學上稱為________。', 
+                ans: ['入超', '貿易逆差'], clue: '代表進口大於出口，國家的白銀不斷外流給對方。', 
+                explanation: '英國長期對華貿易呈現「入超」，為了扭轉虧損，不惜向中國走私鴉片。' 
+            },
+            { 
+                id: 16, type: 'text', stage: '第三階段：填充題', prize: 450000, 
+                q: '為扭轉對華貿易的巨大虧損，英國開始向中國大量走私________，這不僅掏空了清朝國庫，更嚴重削弱了軍隊戰鬥力。', 
+                ans: ['鴉片', '大煙'], clue: '這是一種極易上癮的毒品。', 
+                explanation: '鴉片的大量輸入不僅造成中國白銀外流，更嚴重破壞了國民的健康與國防力量。' 
+            },
+            { 
+                id: 17, type: 'text', stage: '第三階段：填充題', prize: 500000, 
+                q: '1839年，英國水手在九龍尖沙咀打死村民。英國商務總監義律拒絕交出兇手，此事件成為鴉片戰爭導火線，史稱「________事件」。', 
+                ans: ['林維喜'], clue: '該事件以受害的當地村民名字來命名。', 
+                explanation: '林維喜事件發生後，林則徐下令驅逐英人並切斷補給，促使英國國會決議出兵中國。' 
+            },
+            { 
+                id: 18, type: 'text', stage: '第三階段：填充題', prize: 550000, 
+                q: '鴉片戰爭戰敗後，清朝被迫簽訂《南京條約》。條約中規定中國須賠償英國高達________萬兩白銀。', 
+                ans: ['2100', '二千一百'], clue: '數字開頭是2，包含了煙價、商欠和軍費。', 
+                explanation: '《南京條約》規定清朝需賠款2100萬兩洋銀，加重了國家與人民的財政負擔。' 
+            },
+            { 
+                id: 19, type: 'text', stage: '第三階段：填充題', prize: 600000, 
+                q: '《南京條約》中，英國取得了在中國享有「________待遇」的特權，這意味著日後中國給予他國任何權益，英國皆可一體均沾。', 
+                ans: ['最惠國', '片面最惠國', '最惠國待遇'], clue: '這是一種坐享其成的外交條款。', 
+                explanation: '最惠國待遇條款使得中國的國家主權進一步遭到列強的聯合剝削。' 
+            },
+            { 
+                id: 20, type: 'text', stage: '第三階段：填充題', prize: 650000, 
+                q: '英國人如果在中國犯法，清政府無權審判，必須交由英國領事處理。這項嚴重破壞中國司法主權的特權稱為什麼？', 
+                ans: ['領事裁判權', '治外法權'], clue: '這代表外國人在中國享有不受當地法律制裁的治外法權。', 
+                explanation: '領事裁判權嚴重損害了中國的司法獨立，使洋人在中國橫行無忌。' 
+            },
+            { 
+                id: 21, type: 'text', stage: '第三階段：填充題', prize: 700000, 
+                q: '英國為了進一步擴大在華利益，向清廷提出什麼要求遭到拒絕，進而成為醞釀第二次鴉片戰爭（英法聯軍）的遠因？', 
+                ans: ['修約', '十二年修約', '修改條約'], clue: '他們援引了中美、中法條約中的相關條款，要求重新談判利益。', 
+                explanation: '英國提出「十二年修約」遭清廷嚴拒，於是開始尋找藉口發動新的戰爭。' 
+            },
+            { 
+                id: 22, type: 'text', stage: '第三階段：填充題', prize: 750000, 
+                q: '在英法聯軍之役中，法國以一名傳教士在廣西被殺為藉口出兵，此事件史稱「________教案」。', 
+                ans: ['馬神父', '西林', '馬賴'], clue: '這位神父姓馬，事件發生在西林縣。', 
+                explanation: '法國以「馬神父事件」為由，與英國（以亞羅號事件為由）聯手發動英法聯軍之役。' 
+            },
+            { 
+                id: 23, type: 'text', stage: '第三階段：填充題', prize: 800000, 
+                q: '英法聯軍攻入北京後，清朝被迫簽訂《北京條約》，除了增加賠款外，更將香港的________南部割讓給英國。', 
+                ans: ['九龍半島', '九龍'], clue: '這是緊鄰著香港島北部的半島地區。', 
+                explanation: '1860年的《北京條約》將九龍半島割讓，使英國在香港的殖民地進一步擴大。' 
+            },
+            { 
+                id: 24, type: 'order', stage: '第四階段：時間順序題', prize: 900000, 
+                q: '請將下列「明清交替時期」的歷史事件，按發生時間的先後次序排列：', 
+                options: [
+                    '李自成發動民變攻入首都北京', 
+                    '努爾哈赤進攻寧遠城被砲彈擊傷致死', 
+                    '吳三桂降清並引清兵入山海關', 
+                    '皇太極施展反間計借明朝之手殺袁崇煥'
+                ], 
+                ans: [1, 3, 0, 2], 
+                clue: '努爾哈赤先死，其子繼位後殺了明將；後來明朝內部大亂首都淪陷，最後吳三桂才開關引清兵。', 
+                explanation: '正確順序：(1)努爾哈赤戰死寧遠 -> (2)皇太極殺袁崇煥 -> (3)李自成攻陷北京 -> (4)吳三桂引清兵入關。' 
+            },
+            { 
+                id: 25, type: 'order', stage: '第五階段：終極百萬大挑戰', prize: 1000000, 
+                q: '【終極百萬大獎題】關於「鴉片戰爭至英法聯軍」的歷史進程，請按先後次序排列：', 
+                options: [
+                    '清朝戰敗，簽訂《南京條約》割讓香港島', 
+                    '林則徐禁煙引發「林維喜事件」衝突', 
+                    '英法聯軍攻入北京火燒圓明園，簽《北京條約》割九龍', 
+                    '英國提出「十二年修約」被拒，以亞羅號事件為由再興兵'
+                ], 
+                ans: [1, 0, 3, 2], 
+                clue: '第一次戰爭的導火線先發生，然後割香港島；後來要求擴大利益失敗引發第二次戰爭，最後首都遭劫割讓九龍。', 
+                explanation: '正確順序：(1)林維喜事件 -> (2)簽《南京條約》割香港島 -> (3)修約失敗引爆英法聯軍 -> (4)簽《北京條約》割九龍半島。' 
+            }
+        ];
 
-          <button 
-            onClick={() => setGameState('start')}
-            className="group flex items-center justify-center gap-3 mx-auto px-10 py-4 mt-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 transition-all duration-300 shadow-sm"
-          >
-            <RefreshCw className="w-5 h-5 text-slate-400 group-hover:rotate-180 transition-transform duration-700" />
-            <span className="tracking-[0.1em] text-slate-700">返回級別選擇</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
+        // ==========================================
+        // 題庫二：中三級 (共 25 題)
+        // 涵蓋國共內戰、建國初期、大躍進與文化大革命
+        // ==========================================
+        const QUESTIONS_F3 = [
+            { 
+                id: 1, type: 'mcq', stage: '第一階段：選擇題', prize: 1000, 
+                q: '在國共內戰中，共產黨最後在哪三大戰役中重挫國軍主力，取得決定性勝利？', 
+                options: ['淞滬、徐州、武漢', '遼瀋、淮海、平津', '長沙、衡陽、桂林', '淮海、渡江、平津'], 
+                ans: 1, clue: '這三場戰役主要發生在東北、華東和華北，幾乎消滅了國軍的精銳部隊。', 
+                explanation: '遼瀋、淮海、平津三大戰役是國共內戰中的戰略決戰，共產黨藉此消滅了國民黨軍隊的主力，奠定了建國基礎。' 
+            },
+            { 
+                id: 2, type: 'mcq', stage: '第一階段：選擇題', prize: 2000, 
+                q: '國軍在內戰後期為了取代嚴重貶值的「法幣」，改發行了哪一種貨幣，結果卻直接促使經濟徹底崩潰？', 
+                options: ['銀圓券', '交子', '金圓券', '關金券'], 
+                ans: 2, clue: '這是一種以黃金為準備金名義發行的貨幣，但因政府濫發而形同廢紙。', 
+                explanation: '國民政府在內戰末期強行發行「金圓券」取代法幣，引發惡性通貨膨脹，導致經濟崩潰，民心盡失。' 
+            },
+            { 
+                id: 3, type: 'mcq', stage: '第一階段：選擇題', prize: 5000, 
+                q: '建國初期，新中國推行「鎮反」、「三反」、「五反」等政治運動。其中「三反」主要是針對哪一類人？', 
+                options: ['資本家', '地主', '國民黨殘餘力量', '黨政機關內的貪污官僚'], 
+                ans: 3, clue: '這場運動的口號是反貪污、反浪費、反官僚主義。', 
+                explanation: '「三反」運動主要是針對黨政機關內部的貪污舞弊與官僚作風；而「五反」才是針對資本家的不法行為。' 
+            },
+            { 
+                id: 4, type: 'mcq', stage: '第一階段：選擇題', prize: 10000, 
+                q: '在「大躍進」中，政府在農業上提出以甚麼為綱？', 
+                options: ['鋼', '鐵', '糧', '棉'], 
+                ans: 2, clue: '民以食為天，這項政策要求全國集中力量提高農作物的產量。', 
+                explanation: '大躍進時期，農業上提出「以糧為綱」，卻因此引發了各地的浮誇風，競相虛報產量，最終導致饑荒。' 
+            },
+            { 
+                id: 5, type: 'mcq', stage: '第一階段：選擇題', prize: 20000, 
+                q: '在三面紅旗運動時期，全國各地組織了甚麼制度來實行集體所有制，卻導致人民積極性大幅下降？', 
+                options: ['土地改革', '三自一包', '人民公社', '第一個五年計劃'], 
+                ans: 2, clue: '這是一種「政社合一」的基層組織，標榜「一大二公」，大家都在公共食堂吃飯。', 
+                explanation: '「人民公社化運動」強行將農業生產合作社合併，實行高度集中的平均分配，嚴重打擊了農民的生產積極性。' 
+            },
+            { 
+                id: 6, type: 'mcq', stage: '第一階段：選擇題', prize: 30000, 
+                q: '文化大革命期間，號召全國大、中學生停課鬧革命，他們組織了甚麼團體到處進行批鬥和抄家？', 
+                options: ['知青', '走資派', '黑五類', '紅衛兵'], 
+                ans: 3, clue: '他們多佩戴紅色袖章，高呼「造反有理」，是文革初期的急先鋒。', 
+                explanation: '毛澤東號召青年學生組織「紅衛兵」，他們在全國各地進行大串聯、批鬥和破壞，造成極大的社會動亂。' 
+            },
+            { 
+                id: 7, type: 'mcq', stage: '第一階段：選擇題', prize: 40000, 
+                q: '文化大革命期間提出的「破四舊」運動，紅衛兵主要破壞了甚麼事物？', 
+                options: ['傳統古蹟文物及圖書字畫', '重工業生產設施', '蘇聯的駐華領事館', '農村的現代化農具'], 
+                ans: 0, clue: '這場運動將舊思想、舊文化、舊風俗、舊習慣視為毒草。', 
+                explanation: '紅衛兵以「破四舊」為名，瘋狂破壞中國傳統的古蹟、廟宇、文物和字畫，對歷史文化遺產造成無法彌補的損失。' 
+            },
+            { 
+                id: 8, type: 'mcq', stage: '第一階段：選擇題', prize: 60000, 
+                q: '文革中，政府為了平息城市動亂，號召青年往農村去接受「貧下中農再教育」，這場運動稱為什麼？', 
+                options: ['全民大煉鋼', '上山下鄉', '土地改革', '三反五反'], 
+                ans: 1, clue: '將城市中的狂熱青年遣送至偏遠的山區與農村進行體力勞動。', 
+                explanation: '「上山下鄉」運動將大量城市知識青年送到農村勞動，影響了一代人的青春，造成人才和教育的嚴重斷層。' 
+            },
+            { 
+                id: 9, type: 'mcq', stage: '第一階段：選擇題', prize: 80000, 
+                q: '根據統計，十年文革動亂對中國經濟造成重大破壞，使得國民收入損失約多少元？', 
+                options: ['2000億元', '3000億元', '4000億元', '5000億元'], 
+                ans: 3, clue: '這是一個極其龐大的數字，字首是5。', 
+                explanation: '十年文革對中國經濟造成毀滅性打擊，國家計委估計國民收入損失高達5000億元人民幣。' 
+            },
+            { 
+                id: 10, type: 'mcq', stage: '第一階段：選擇題', prize: 100000, 
+                q: '文革期間因教育停頓，中國出現大量文盲。當時文盲約佔全國總人口數的比例是多少？', 
+                options: ['近五分之一', '近四分之一', '近三分之一', '近二分之一'], 
+                ans: 1, clue: '因為「讀書無用論」盛行與學校停辦，大約每四個人之中就有一個不識字。', 
+                explanation: '文革期間教育系統全面癱瘓，導致中國出現大量文盲和半文盲，約佔當時全國總人口的近四分之一。' 
+            },
+            { 
+                id: 11, type: 'text', stage: '第二階段：人物題', prize: 150000, 
+                q: '我是新中國的締造者；但在大躍進挫敗後退居二線，為了防範資本主義復辟並重奪權威，我發動了文化大革命。我是誰？', 
+                ans: ['毛澤東'], clue: '我的肖像至今仍懸掛在北京天安門城樓上。', 
+                explanation: '毛澤東領導中共建國，晚年發動了影響深遠的「大躍進」與「文化大革命」，對中國近現代發展產生極大影響。' 
+            },
+            { 
+                id: 12, type: 'text', stage: '第二階段：人物題', prize: 200000, 
+                q: '我在三年困難時期上場處理經濟危機，並推行「三自一包」。結果在文革中被指為最大的「走資派」並迫害致死。我是誰？', 
+                ans: ['劉少奇'], clue: '我曾接替毛澤東出任中華人民共和國國家主席。', 
+                explanation: '劉少奇推行務實政策成功挽救經濟，卻與毛澤東產生路線分歧，最終成為文革中最大的政治受害者。' 
+            },
+            { 
+                id: 13, type: 'text', stage: '第二階段：人物題', prize: 250000, 
+                q: '我曾被視為毛澤東的親密戰友與接班人，但後來因被猜忌而策劃武裝政變。事敗後我乘飛機逃亡蘇聯，最終在蒙古墜機身亡。我是誰？', 
+                ans: ['林彪'], clue: '這起震驚中外的墜機事件史稱「九一三事件」。', 
+                explanation: '林彪在文革中權勢極度膨脹，企圖發動政變奪權，失敗後逃亡途中命喪溫都爾汗。' 
+            },
+            { 
+                id: 14, type: 'text', stage: '第二階段：人物題', prize: 300000, 
+                q: '我在毛澤東離世後成為他的繼承人。我果斷下令逮捕了江青等「四人幫」，結束了長達十年的文化大革命。我是誰？', 
+                ans: ['華國鋒'], clue: '毛澤東生前曾對我說過：「你辦事，我放心。」', 
+                explanation: '華國鋒在1976年接任最高領導職務，並迅速粉碎了「四人幫」集團，標誌著十年文革動亂的終結。' 
+            },
+            { 
+                id: 15, type: 'text', stage: '第二階段：人物題', prize: 400000, 
+                q: '我是著名的歷史學家兼北京市副市長。因為我發表的《海瑞罷官》一劇被解讀為借古諷今，成為文革爆發的導火線。我是誰？', 
+                ans: ['吳晗'], clue: '姚文元寫了一篇文章猛烈批判這部劇作，直接將矛頭指向了我。', 
+                explanation: '吳晗創作的《海瑞罷官》被解讀為為彭德懷翻案，對其的批判拉開了文化大革命的序幕。' 
+            },
+            { 
+                id: 16, type: 'text', stage: '第三階段：填充題', prize: 450000, 
+                q: '抗日戰爭後，國共兩黨在蘇聯和美國推動下舉行「________談判」，並簽訂《雙十協定》，但最終未能阻止內戰爆發。', 
+                ans: ['重慶'], clue: '這場談判發生在抗戰時期的國民政府陪都，毛澤東親自飛往當地與蔣介石會面。', 
+                explanation: '1945年國共兩黨舉行重慶談判，雖達成《雙十協定》，但雙方在軍隊和政權問題上仍有根本分歧。' 
+            },
+            { 
+                id: 17, type: 'text', stage: '第三階段：填充題', prize: 500000, 
+                q: '建國初期為恢復經濟，政府發動「________運動」，沒收地主土地分給無地及少地的農民，確立了強大的農村基礎。', 
+                ans: ['土地改革', '土改'], clue: '這場運動徹底消滅了中國延續兩千多年的封建土地所有制。', 
+                explanation: '「土地改革」讓數億無地農民獲得土地，極大鞏固了新政權在農村的根基。' 
+            },
+            { 
+                id: 18, type: 'text', stage: '第三階段：填充題', prize: 550000, 
+                q: '新中國初期仿效蘇聯推行「________」，集中全國力量優先發展重工業，為國家的工業化奠基。', 
+                ans: ['第一個五年計劃', '一五計劃'], clue: '這是一項以五年為期、帶有濃烈計劃經濟色彩的國家發展戰略。', 
+                explanation: '中國自1953年起實施「第一個五年計劃」，重點發展鋼鐵、煤炭等基礎重工業。' 
+            },
+            { 
+                id: 19, type: 'text', stage: '第三階段：填充題', prize: 600000, 
+                q: '在「大躍進」中，政府盲目追求鋼鐵產量，發動全民「________」，卻因技術落後造成大量廢鋼與資源浪費。', 
+                ans: ['大煉鋼', '煉鋼'], clue: '當時各地建起了無數的土高爐，連農民家裡的鐵鍋都被拿去熔掉。', 
+                explanation: '大煉鋼運動不僅產出了大量無用的廢鋼，更嚴重破壞了生態環境與農業生產。' 
+            },
+            { 
+                id: 20, type: 'text', stage: '第三階段：填充題', prize: 650000, 
+                q: '大躍進時期，地方官員為了取悅中央而大肆「________」豐收數字，導致國家過度徵購糧食，爆發嚴重饑荒。', 
+                ans: ['虛報', '浮誇', '虛報產量'], clue: '當時各地競相放出「畝產萬斤」甚至十萬斤的「衛星」，完全脫離常理。', 
+                explanation: '「浮誇風」導致國家徵購過多，農民無糧可吃，是造成三年困難時期的重要「人禍」因素。' 
+            },
+            { 
+                id: 21, type: 'text', stage: '第三階段：填充題', prize: 700000, 
+                q: '面對大饑荒，劉少奇等人上場推行「________」政策，允許農民有自留地和自由市場，成功讓經濟復甦。', 
+                ans: ['三自一包'], clue: '這四個字的政策核心是放寬管制、包產到戶，極大恢復了農民的生產積極性。', 
+                explanation: '「三自一包」是三年困難時期後，務實派為恢復國民經濟而採取的有效調整政策。' 
+            },
+            { 
+                id: 22, type: 'text', stage: '第三階段：填充題', prize: 750000, 
+                q: '毛澤東將劉少奇等人的經濟政策視為資本主義復辟，決心清除黨內的「________」，並正式展開文化大革命。', 
+                ans: ['走資派', '資本主義道路的當權派'], clue: '這是文革中最常見的政治罪名，全稱為「走資本主義道路的當權派」。', 
+                explanation: '毛澤東認為黨內高層出現了企圖改變社會主義方向的「走資派」，因而發動文革進行大清洗。' 
+            },
+            { 
+                id: 23, type: 'text', stage: '第三階段：填充題', prize: 800000, 
+                q: '文革十年對教育造成巨大破壞，大學停辦，使得中國形成了嚴重的文化斷層、科技斷層及「________」斷層。', 
+                ans: ['人才'], clue: '青年的學業被迫中斷，國家在各行各業出現了青黃不接的危機。', 
+                explanation: '文革導致整整一代人失去接受高等教育的機會，造成嚴重的人才斷層，阻礙了現代化進程。' 
+            },
+            { 
+                id: 24, type: 'order', stage: '第四階段：時間順序題', prize: 900000, 
+                q: '請將下列「新中國建國初期的政策演變」，按歷史發生先後次序排列：', 
+                options: [
+                    '推行「三自一包」政策以挽救經濟', 
+                    '發動「土地改革運動」沒收地主土地', 
+                    '提出「大躍進」與「人民公社」等三面紅旗運動', 
+                    '推行「第一個五年計劃」優先發展重工業'
+                ], 
+                ans: [1, 3, 2, 0], 
+                clue: '先分土地鞏固政權，接著搞計劃經濟重工業，然後腦子發熱搞出大躍進，最後被迫收拾經濟殘局。', 
+                explanation: '正確順序：(1)土地改革(1950) -> (2)一五計劃(1953) -> (3)三面紅旗大躍進(1958) -> (4)三自一包(1960年代初)。' 
+            },
+            { 
+                id: 25, type: 'mcq', stage: '第五階段：終極百萬範圍題', prize: 1000000, 
+                q: '【終極百萬大獎題】文革動亂對經濟造成極嚴重的破壞（損失約5000億元）。這個數字，大約相當於建國以來全國基本建設投資總額的百分之幾的範圍內？', 
+                options: ['35% - 45% 之間', '55% - 65% 之間', '75% - 85% 之間', '90% - 100% 之間'], 
+                ans: 2, clue: '這是一個令人震驚的比例，意味著建國以來幾乎五分之四的建設投資都付諸流水。', 
+                explanation: '5000億元的巨大經濟損失，大約相當於建國以來全國基本建設投資總額的 80%，因此答案落在 75% - 85% 之間。' 
+            }
+        ];
 
-  // ==========================================
-  // 畫面 3：遊戲主畫面
-  // ==========================================
-  return (
-    <div className="min-h-screen bg-[#FAFAFA] text-slate-800 flex flex-col xl:flex-row font-sans overflow-hidden">
-      <HintModal />
-      
-      {/* 背景裝飾光暈 */}
-      <div className="fixed top-0 left-0 w-[50vw] h-[50vw] bg-blue-200/30 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-      <div className="fixed bottom-0 right-0 w-[50vw] h-[50vw] bg-amber-200/30 rounded-full blur-[150px] translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
+        const PRIZES = [...QUESTIONS_F2].reverse().map(q => q.prize);
 
-      {/* ---------------- 左側：主遊戲區 ---------------- */}
-      <div className="flex-1 flex flex-col p-6 md:p-12 lg:px-24 justify-center relative z-10 overflow-y-auto">
-        
-        {/* 頂部導航與狀態 */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 border-b border-slate-200 pb-6">
-          <div className="space-y-1">
-            <p className="text-amber-600/80 uppercase tracking-[0.2em] text-xs font-semibold flex items-center gap-2">
-              <button onClick={() => setGameState('start')} className="text-slate-400 hover:text-slate-600 transition-colors mr-2 text-xl">&larr;</button>
-              {currentQ.stage}
-            </p>
-            <h2 className="text-2xl font-serif text-slate-900">Question {currentIndex + 1} <span className="text-slate-400 text-lg">/ 25</span></h2>
-          </div>
+        function App() {
+            const [gameState, setGameState] = useState('start');
+            const [activeQuestions, setActiveQuestions] = useState(QUESTIONS_F2);
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [earnedPrize, setEarnedPrize] = useState(0);
+            
+            const [checkState, setCheckState] = useState('idle'); // idle, checking, correct, wrong
+            const [selectedAns, setSelectedAns] = useState(null); 
+            const [textInput, setTextInput] = useState(''); 
+            const [orderSelection, setOrderSelection] = useState([]); 
+            const [revealedAns, setRevealedAns] = useState(null);
 
-          {/* 提示機制 (Lifelines) 按鈕 */}
-          <div className="flex gap-4">
-            <button 
-              onClick={useFiftyFifty}
-              disabled={!lifelines.fiftyFifty || currentQ.type !== 'mcq' || checkState !== 'idle'}
-              className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all duration-300 ${
-                !lifelines.fiftyFifty ? 'border-slate-200 text-slate-300 bg-transparent' : 
-                currentQ.type !== 'mcq' ? 'border-slate-200 text-slate-300 bg-transparent cursor-not-allowed' :
-                'border-amber-300 text-amber-600 bg-amber-50 hover:bg-amber-100 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(212,175,55,0.15)]'
-              }`}
-              title="50:50 刪除兩個錯誤選項"
-            >
-              <SplitSquareHorizontal strokeWidth={1.5} />
-            </button>
-            <button 
-              onClick={useAskAudience}
-              disabled={!lifelines.askAudience || currentQ.type !== 'mcq' || checkState !== 'idle'}
-              className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all duration-300 ${
-                !lifelines.askAudience ? 'border-slate-200 text-slate-300 bg-transparent' : 
-                currentQ.type !== 'mcq' ? 'border-slate-200 text-slate-300 bg-transparent cursor-not-allowed' :
-                'border-amber-300 text-amber-600 bg-amber-50 hover:bg-amber-100 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(212,175,55,0.15)]'
-              }`}
-              title="尋求現場觀眾投票"
-            >
-              <Users strokeWidth={1.5} />
-            </button>
-            <button 
-              onClick={useHint}
-              disabled={!lifelines.hint || checkState !== 'idle'}
-              className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all duration-300 ${
-                !lifelines.hint ? 'border-slate-200 text-slate-300 bg-transparent' : 
-                'border-amber-300 text-amber-600 bg-amber-50 hover:bg-amber-100 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(212,175,55,0.15)]'
-              }`}
-              title="智囊團提示"
-            >
-              <Lightbulb strokeWidth={1.5} />
-            </button>
-          </div>
-        </div>
+            const [lifelines, setLifelines] = useState({ fiftyFifty: true, askAudience: true, hint: true });
+            const [hiddenOptions, setHiddenOptions] = useState([]); 
+            const [audienceData, setAudienceData] = useState(null); 
+            const [showHintModal, setShowHintModal] = useState(false);
 
-        {/* 進度條與已獲取獎金顯示 */}
-        <div className="mb-8">
-          <div className="flex justify-between items-end mb-3">
-            <span className="text-sm font-medium text-slate-500 tracking-wider">CHALLENGE PROGRESS</span>
-            <div className="text-right">
-              <span className="text-xs text-slate-400 uppercase tracking-widest block mb-1">已保證獎金</span>
-              <span className="text-xl font-mono font-bold text-amber-600">${earnedPrize.toLocaleString()}</span>
-            </div>
-          </div>
-          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-            <div 
-              className="bg-gradient-to-r from-amber-400 to-amber-500 h-full transition-all duration-700 ease-out" 
-              style={{ width: `${(currentIndex / activeQuestions.length) * 100}%` }}
-            ></div>
-          </div>
-        </div>
+            // 用於自動捲動獎金表的參考
+            const prizeLadderRef = useRef(null);
 
-        {/* 題目顯示區 */}
-        <div className="mb-12 relative">
-          <div className="text-amber-600/90 font-mono text-sm tracking-widest mb-4 flex items-center gap-3">
-            <span className="h-[1px] w-8 bg-amber-500/40 block"></span>
-            VALUE: ${currentQ.prize.toLocaleString()}
-          </div>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif leading-[1.4] text-slate-900">
-            {currentQ.q}
-          </h1>
-        </div>
+            const currentQ = activeQuestions[currentIndex];
 
-        {/* --- 動態答題區 --- */}
-        <div className="w-full mt-auto">
-          
-          {/* 模式 A：選擇題 (MCQ) */}
-          {currentQ.type === 'mcq' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              {currentQ.options.map((opt, idx) => {
-                const isHidden = hiddenOptions.includes(idx);
-                if (isHidden) {
-                  return <div key={idx} className="hidden md:block opacity-0"></div>;
+            // 當前題目改變時，重置所有輸入狀態並捲動獎金表
+            useEffect(() => {
+                if (gameState === 'playing' && prizeLadderRef.current) {
+                    const activeElement = prizeLadderRef.current.querySelector('.bg-amber-50');
+                    if (activeElement) {
+                        activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                 }
+            }, [currentIndex, gameState]);
 
-                let btnClass = "relative group flex items-center p-6 rounded-2xl border transition-all duration-500 ";
-                const isSelected = selectedAns === idx;
+            const startGame = (questionSet) => {
+                setActiveQuestions(questionSet);
+                setGameState('playing');
+                setCurrentIndex(0);
+                setEarnedPrize(0);
+                setLifelines({ fiftyFifty: true, askAudience: true, hint: true });
+                resetInputs();
+            };
+
+            const resetInputs = () => {
+                setCheckState('idle');
+                setSelectedAns(null);
+                setTextInput('');
+                setOrderSelection([]);
+                setRevealedAns(null);
+                setHiddenOptions([]);
+                setAudienceData(null);
+                setShowHintModal(false);
+            };
+
+            const useFiftyFifty = () => {
+                if (!lifelines.fiftyFifty || currentQ.type !== 'mcq' || checkState !== 'idle') return;
+                const correctIdx = currentQ.ans;
+                const wrongIndices = [0, 1, 2, 3].filter(i => i !== correctIdx);
+                const toHide = wrongIndices.sort(() => 0.5 - Math.random()).slice(0, 2);
+                setHiddenOptions(toHide);
+                setLifelines(prev => ({ ...prev, fiftyFifty: false }));
+            };
+
+            const useAskAudience = () => {
+                if (!lifelines.askAudience || currentQ.type !== 'mcq' || checkState !== 'idle') return;
+                const correctIdx = currentQ.ans;
+                let remaining = 100;
+                const stats = {};
                 
-                if (checkState === 'idle') {
-                  btnClass += "border-slate-200 bg-white/60 hover:bg-white hover:border-amber-400 shadow-sm cursor-pointer";
-                } else if (checkState === 'checking' && isSelected) {
-                  btnClass += "border-amber-400 bg-amber-50 animate-pulse";
-                } else if (checkState === 'correct' || checkState === 'wrong') {
-                  if (revealedAns === idx) {
-                    btnClass += "border-green-400 bg-green-50 shadow-[0_0_20px_rgba(34,197,94,0.15)]"; 
-                  } else if (isSelected) {
-                    btnClass += "border-red-400 bg-red-50"; 
-                  } else {
-                    btnClass += "border-slate-200 opacity-50"; 
-                  }
+                const correctPct = Math.floor(Math.random() * 30) + 45; // 45% - 74%
+                stats[correctIdx] = correctPct;
+                remaining -= correctPct;
+
+                const availableWrong = [0, 1, 2, 3].filter(i => i !== correctIdx && !hiddenOptions.includes(i));
+                availableWrong.forEach((idx, i) => {
+                    if (i === availableWrong.length - 1) {
+                        stats[idx] = remaining;
+                    } else {
+                        const pct = Math.floor(Math.random() * (remaining - 5)); 
+                        stats[idx] = pct;
+                        remaining -= pct;
+                    }
+                });
+
+                setAudienceData(stats);
+                setLifelines(prev => ({ ...prev, askAudience: false }));
+            };
+
+            const useHint = () => {
+                if (!lifelines.hint || checkState !== 'idle') return;
+                setShowHintModal(true);
+                setLifelines(prev => ({ ...prev, hint: false }));
+            };
+
+            // 處理選擇題提交
+            const handleMCQSubmit = (index) => {
+                if (checkState !== 'idle') return;
+                setSelectedAns(index);
+                verifyAnswer(index === currentQ.ans, currentQ.ans);
+            };
+
+            // 處理文字題提交 (增強包容性比對邏輯)
+            const handleTextSubmit = (e) => {
+                e.preventDefault();
+                if (checkState !== 'idle' || !textInput.trim()) return;
+                
+                const cleanInput = textInput.trim().replace(/\s+/g, '').toLowerCase();
+                
+                // 檢查是否正確：完全符合，或長度足夠時互相包含
+                const isCorrect = currentQ.ans.some(ans => {
+                    const cleanAns = ans.toString().replace(/\s+/g, '').toLowerCase();
+                    if (cleanAns === cleanInput) return true;
+                    if (cleanAns.length >= 2 && cleanInput.includes(cleanAns)) return true;
+                    if (cleanInput.length >= 2 && cleanAns.includes(cleanInput)) return true;
+                    return false;
+                });
+                
+                verifyAnswer(isCorrect, currentQ.ans[0]);
+            };
+
+            // 處理排序題點擊
+            const handleOrderSelect = (index) => {
+                if (checkState !== 'idle') return;
+                if (orderSelection.includes(index)) {
+                    setOrderSelection(orderSelection.filter(i => i !== index));
                 } else {
-                  btnClass += "border-slate-200 opacity-50 cursor-not-allowed";
+                    const newSelection = [...orderSelection, index];
+                    setOrderSelection(newSelection);
+                    // 當選滿 4 個選項時自動核對
+                    if (newSelection.length === 4) {
+                        const isCorrect = JSON.stringify(newSelection) === JSON.stringify(currentQ.ans);
+                        verifyAnswer(isCorrect, currentQ.ans);
+                    }
                 }
+            };
 
-                const audiencePct = audienceData ? audienceData[idx] : null;
+            // 統一核對答案與動畫過渡
+            const verifyAnswer = (isCorrect, correctValue) => {
+                setCheckState('checking');
+                // 模擬懸念時間 (2秒)
+                setTimeout(() => {
+                    setCheckState(isCorrect ? 'correct' : 'wrong');
+                    setRevealedAns(correctValue);
+                    if (isCorrect) {
+                        setEarnedPrize(currentQ.prize);
+                    }
+                }, 2000);
+            };
 
+            // 進入下一題或結算
+            const handleNext = () => {
+                if (checkState === 'correct') {
+                    if (currentIndex < activeQuestions.length - 1) {
+                        setCurrentIndex(currentIndex + 1);
+                        resetInputs();
+                    } else {
+                        setGameState('victory');
+                    }
+                } else if (checkState === 'wrong') {
+                    setGameState('gameover');
+                }
+            };
+
+            // 提示視窗組件
+            const HintModal = () => {
+                if (!showHintModal || !currentQ) return null;
                 return (
-                  <button 
-                    key={idx} 
-                    onClick={() => handleMCQSubmit(idx)}
-                    disabled={checkState !== 'idle'}
-                    className={btnClass}
-                  >
-                    <span className="text-amber-500 font-serif text-xl mr-6 group-hover:text-amber-600 transition-colors">
-                      {['A', 'B', 'C', 'D'][idx]}
-                    </span>
-                    <span className="text-lg text-slate-700 font-light text-left flex-1">{opt}</span>
-                    
-                    {audienceData && (
-                      <div className="absolute right-6 flex items-center gap-3">
-                        <div className="text-sm text-slate-500">{audiencePct}%</div>
-                        <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                          <div className="h-full bg-amber-500 rounded-full" style={{ width: `${audiencePct}%` }}></div>
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md px-4">
+                        <div className="bg-white border border-slate-100 p-8 rounded-2xl max-w-md w-full shadow-2xl relative">
+                            <button onClick={() => setShowHintModal(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors">
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-3 bg-amber-50 rounded-full text-amber-500">
+                                    <i className="fas fa-lightbulb text-2xl"></i>
+                                </div>
+                                <h3 className="text-xl font-serif text-amber-600">智囊團線索</h3>
+                            </div>
+                            <p className="text-lg text-slate-700 leading-relaxed tracking-wide font-light">{currentQ.clue}</p>
+                            <button onClick={() => setShowHintModal(false)} className="mt-8 w-full py-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 rounded-lg transition-all tracking-widest text-sm uppercase">
+                                我知道了
+                            </button>
                         </div>
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* 模式 B：文字輸入題 (填充 / 人物) */}
-          {currentQ.type === 'text' && (
-            <form onSubmit={handleTextSubmit} className="max-w-3xl flex flex-col items-start gap-8">
-              <div className="relative w-full">
-                <input 
-                  type="text" 
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  disabled={checkState !== 'idle'}
-                  placeholder="輸入您的答案..."
-                  className={`w-full bg-transparent border-b-2 py-4 text-3xl md:text-4xl font-light focus:outline-none transition-colors placeholder:text-slate-300 ${
-                    checkState === 'idle' ? 'border-slate-300 focus:border-amber-400 text-slate-900' :
-                    checkState === 'checking' ? 'border-amber-400 text-amber-500 animate-pulse' :
-                    checkState === 'correct' ? 'border-green-500 text-green-600' : 'border-red-500 text-red-600'
-                  }`}
-                />
-              </div>
-              
-              <div className="flex items-center gap-6">
-                {checkState === 'idle' && (
-                  <button type="submit" className="px-10 py-4 bg-slate-800 hover:bg-slate-900 rounded-full text-white tracking-[0.1em] transition-all shadow-md">
-                    提交答案
-                  </button>
-                )}
-                {(checkState === 'correct' || checkState === 'wrong') && (
-                  <div className={`text-xl font-light flex items-center gap-3 animate-in fade-in slide-in-from-left-4 ${checkState === 'correct' ? 'text-green-600' : 'text-red-600'}`}>
-                    {checkState === 'correct' ? <CheckCircle2 className="w-6 h-6"/> : <XCircle className="w-6 h-6"/>}
-                    正確解答：<span className="font-serif">{revealedAns}</span>
-                  </div>
-                )}
-              </div>
-            </form>
-          )}
-
-          {/* 模式 C：排序題 */}
-          {currentQ.type === 'order' && (
-            <div className="space-y-6">
-              <div className="flex flex-col gap-3">
-                {currentQ.options.map((opt, idx) => {
-                  const orderIndex = orderSelection.indexOf(idx);
-                  const isSelected = orderIndex !== -1;
-                  
-                  let bgClass = "bg-white/60 border-slate-200 hover:bg-white hover:border-slate-300 cursor-pointer shadow-sm";
-                  let numBadge = null;
-
-                  if (isSelected) {
-                    bgClass = "bg-amber-50 border-amber-300";
-                    numBadge = <span className="absolute left-6 w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-md">{orderIndex + 1}</span>;
-                  }
-
-                  if (checkState !== 'idle') {
-                     bgClass = "bg-white/60 border-slate-200 opacity-50 cursor-not-allowed";
-                     if (checkState === 'correct' || checkState === 'wrong') {
-                        const correctIdx = revealedAns.indexOf(idx);
-                        bgClass = "bg-green-50 border-green-300 opacity-100";
-                        numBadge = <span className="absolute left-6 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-md">{correctIdx + 1}</span>;
-                     }
-                  }
-
-                  return (
-                    <div 
-                      key={idx} 
-                      onClick={() => handleOrderSelect(idx)}
-                      className={`relative flex items-center min-h-[80px] px-6 pl-20 rounded-2xl border transition-all duration-300 ${bgClass}`}
-                    >
-                      {numBadge}
-                      <span className="text-lg font-light text-slate-700">{opt}</span>
                     </div>
-                  );
-                })}
-              </div>
-              
-              {checkState === 'idle' && (
-                <div className="flex items-center gap-6 pt-4">
-                  <button onClick={() => setOrderSelection([])} className="text-sm text-slate-400 hover:text-slate-600 tracking-widest uppercase transition-colors">
-                    重設順序
-                  </button>
-                  {orderSelection.length === 4 && (
-                    <span className="text-amber-600 tracking-widest uppercase text-sm animate-pulse">
-                      正在核對歷史軌跡...
-                    </span>
-                  )}
-                </div>
-              )}
+                );
+            };
 
-              {(checkState === 'wrong') && (
-                <div className="text-red-500 font-light text-lg mt-4 flex items-center gap-3">
-                  <XCircle className="w-5 h-5" /> 順序錯誤，正確的歷史進程已顯示於上方。
-                </div>
-              )}
-            </div>
-          )}
+            // 遊戲首頁 UI
+            if (gameState === 'start') {
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-300/20 rounded-full blur-[120px] pointer-events-none"></div>
+                        
+                        <div className="relative z-10 w-full max-w-5xl space-y-12">
+                            <div className="text-center space-y-6">
+                                <div className="inline-block relative">
+                                    <i className="fas fa-trophy text-amber-500 text-6xl md:text-8xl relative z-10"></i>
+                                    <div className="absolute inset-0 bg-amber-400/30 blur-2xl rounded-full"></div>
+                                </div>
+                                <div>
+                                    <p className="tracking-[0.3em] uppercase text-amber-600/80 text-sm font-medium mb-3">The Millionaire Challenge</p>
+                                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-slate-900 pb-2">百萬富翁歷史大挑戰</h1>
+                                </div>
+                                <p className="text-lg text-slate-500 font-light">請選擇您的挑戰級別，50道嚴選題庫，最高獎金 <span className="text-amber-600 font-bold">$1,000,000</span>！</p>
+                            </div>
+                            
+                            <div className="grid md:grid-cols-2 gap-6 mt-10">
+                                <button onClick={() => startGame(QUESTIONS_F2)} className="group text-left p-8 rounded-3xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur-md hover:border-amber-400 transition-all duration-500 relative overflow-hidden">
+                                    <div className="absolute right-0 top-0 w-32 h-32 bg-amber-100/30 rounded-full blur-3xl group-hover:bg-amber-200/50"></div>
+                                    <div className="flex justify-between items-start mb-6 relative z-10">
+                                        <div className="w-14 h-14 flex items-center justify-center bg-slate-50 text-slate-600 rounded-2xl group-hover:bg-amber-50 group-hover:text-amber-600 transition-colors">
+                                            <i className="fas fa-book-open text-2xl"></i>
+                                        </div>
+                                        <span className="px-4 py-1.5 bg-slate-100 text-slate-500 text-sm font-medium rounded-full tracking-wider group-hover:bg-amber-100 group-hover:text-amber-700">25 QUESTS</span>
+                                    </div>
+                                    <h2 className="text-2xl font-serif font-bold text-slate-900 mb-2 relative z-10">中二級：滿清入關及近代中國</h2>
+                                    <p className="text-slate-500 font-light leading-relaxed mb-8 relative z-10">從努爾哈赤建國、清朝高壓統治，一路跨越至鴉片戰爭與英法聯軍之役。考驗你對《s2 答案》筆記的熟悉度。</p>
+                                    <div className="flex items-center text-amber-600 font-bold tracking-widest text-sm uppercase relative z-10 group-hover:translate-x-2 transition-transform">
+                                        展開挑戰 <i className="fas fa-chevron-right ml-2 text-xs"></i>
+                                    </div>
+                                </button>
 
-          {/* 解答與解析區 (答對或答錯時顯示) */}
-          {(checkState === 'correct' || checkState === 'wrong') && (
-            <div className="mt-8 p-6 bg-blue-50/50 border border-blue-100 rounded-2xl animate-in fade-in slide-in-from-bottom-4 shadow-sm">
-              <h4 className="text-sm font-bold text-blue-800/60 uppercase tracking-widest mb-3 flex items-center gap-2">
-                <BookOpen className="w-4 h-4" /> 歷史解析
-              </h4>
-              <p className="text-lg text-slate-700 font-light leading-relaxed">
-                {currentQ.explanation}
-              </p>
-            </div>
-          )}
-
-          {/* 繼續 / 結算按鈕 */}
-          {(checkState === 'correct' || checkState === 'wrong') && (
-            <div className="mt-8 flex justify-end animate-in fade-in slide-in-from-bottom-4">
-              <button 
-                onClick={handleNext}
-                className={`px-8 py-4 rounded-full font-medium tracking-widest uppercase transition-all shadow-md flex items-center gap-2 ${
-                  checkState === 'correct' 
-                    ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/25' 
-                    : 'bg-slate-800 hover:bg-slate-900 text-white'
-                }`}
-              >
-                {checkState === 'correct' ? (currentIndex === activeQuestions.length - 1 ? '領取百萬大獎' : '繼續下一題') : '查看結算'}
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ---------------- 右側：獎金階梯 (桌面版顯示) ---------------- */}
-      <div className="hidden xl:flex w-80 border-l border-slate-200 bg-white/80 backdrop-blur-2xl flex-col py-12 px-8 relative z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.02)]">
-        <h3 className="text-amber-600/80 font-semibold tracking-[0.3em] uppercase text-xs mb-10">Prize Ladder</h3>
-        <div className="flex flex-col gap-1 flex-1 justify-end">
-          {PRIZES.map((prize, idx) => {
-            const actualQIndex = PRIZES.length - 1 - idx;
-            const isCurrent = actualQIndex === currentIndex;
-            const isPassed = actualQIndex < currentIndex;
-            const isMilestone = prize === 1000000 || prize === 100000 || prize === 10000;
-
-            let rowClass = "flex justify-between items-center py-2 px-4 rounded-xl text-sm font-mono transition-all duration-500 ";
-            let textClass = "";
-
-            if (isCurrent) {
-              rowClass += "bg-amber-50 border border-amber-300 scale-105 shadow-sm relative";
-              textClass = "text-amber-600 font-bold";
-            } else if (isPassed) {
-              textClass = "text-slate-300";
-            } else {
-              textClass = isMilestone ? "text-slate-800 font-medium" : "text-slate-400";
+                                <button onClick={() => startGame(QUESTIONS_F3)} className="group text-left p-8 rounded-3xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur-md hover:border-blue-400 transition-all duration-500 relative overflow-hidden">
+                                    <div className="absolute right-0 top-0 w-32 h-32 bg-blue-100/30 rounded-full blur-3xl group-hover:bg-blue-200/50"></div>
+                                    <div className="flex justify-between items-start mb-6 relative z-10">
+                                        <div className="w-14 h-14 flex items-center justify-center bg-slate-50 text-slate-600 rounded-2xl group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                            <i className="fas fa-graduation-cap text-2xl"></i>
+                                        </div>
+                                        <span className="px-4 py-1.5 bg-slate-100 text-slate-500 text-sm font-medium rounded-full tracking-wider group-hover:bg-blue-100 group-hover:text-blue-700">25 QUESTS</span>
+                                    </div>
+                                    <h2 className="text-2xl font-serif font-bold text-slate-900 mb-2 relative z-10">中三級：國共內戰及建國發展</h2>
+                                    <p className="text-slate-500 font-light leading-relaxed mb-8 relative z-10">重溫三大戰役、新中國初期的經濟政策演變（土改、大躍進），乃至十年文革的始末。</p>
+                                    <div className="flex items-center text-blue-600 font-bold tracking-widest text-sm uppercase relative z-10 group-hover:translate-x-2 transition-transform">
+                                        展開挑戰 <i className="fas fa-chevron-right ml-2 text-xs"></i>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
             }
 
+            // 遊戲結束或勝利 UI
+            if (gameState === 'gameover' || gameState === 'victory') {
+                const isVictory = gameState === 'victory';
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[120px] pointer-events-none ${isVictory ? 'bg-amber-400/20' : 'bg-red-400/10'}`}></div>
+                        <div className="relative z-10 max-w-2xl w-full text-center space-y-10 p-12 bg-white/80 backdrop-blur-xl border border-white shadow-xl rounded-3xl">
+                            {isVictory ? (
+                                <i className="fas fa-trophy text-amber-500 text-8xl mx-auto drop-shadow-lg"></i>
+                            ) : (
+                                <i className="fas fa-times-circle text-red-500/80 text-8xl mx-auto drop-shadow-md"></i>
+                            )}
+                            <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900">{isVictory ? '歷史傳奇，百萬富翁！' : '歷史的長河在此停歇'}</h1>
+                            <div className="space-y-3 bg-slate-50 py-8 rounded-2xl border border-slate-100">
+                                <p className="text-slate-500 uppercase tracking-[0.2em] text-sm font-bold">最終獲得獎金</p>
+                                <p className="text-6xl md:text-7xl font-bold text-amber-500 tracking-tight">${earnedPrize.toLocaleString()}</p>
+                                <p className="text-slate-400 text-sm pt-2">完成進度：{currentIndex + (isVictory ? 1 : 0)} / 25</p>
+                            </div>
+                            <button onClick={() => setGameState('start')} className="group flex items-center justify-center gap-3 mx-auto px-10 py-4 mt-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm font-bold">
+                                <i className="fas fa-home text-slate-400 group-hover:text-slate-600 transition-colors"></i>
+                                <span className="tracking-[0.1em] text-slate-700">返回級別選擇</span>
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // 主要遊戲介面
             return (
-              <div key={idx} className={rowClass}>
-                <span className={`w-8 text-left ${textClass}`}>{actualQIndex + 1}</span>
-                <span className={`flex-1 text-right ${textClass}`}>
-                  ${prize.toLocaleString()}
-                </span>
-                {isCurrent && <div className="absolute -left-1 w-1 h-1/2 bg-amber-400 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]"></div>}
-              </div>
+                <div className="min-h-screen flex flex-col lg:flex-row relative">
+                    <HintModal />
+                    
+                    <div className="fixed top-0 left-0 w-[50vw] h-[50vw] bg-blue-200/20 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0"></div>
+                    <div className="fixed bottom-0 right-0 w-[50vw] h-[50vw] bg-amber-200/20 rounded-full blur-[150px] translate-x-1/2 translate-y-1/2 pointer-events-none z-0"></div>
+
+                    {/* 左側：遊戲主畫面 */}
+                    <div className="flex-1 flex flex-col p-6 md:p-10 lg:px-16 justify-center relative z-10 min-h-screen overflow-y-auto">
+                        <div className="max-w-4xl mx-auto w-full">
+                            {/* 頂部導航與錦囊 */}
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 border-b border-slate-200 pb-6">
+                                <div className="space-y-1">
+                                    <p className="text-amber-600/80 uppercase tracking-[0.2em] text-xs font-bold flex items-center gap-2">
+                                        <button onClick={() => { if(confirm('確定要放棄目前進度返回首頁嗎？')) setGameState('start'); }} className="text-slate-400 hover:text-slate-600 transition-colors mr-2"><i className="fas fa-arrow-left"></i></button>
+                                        {currentQ.stage}
+                                    </p>
+                                    <h2 className="text-2xl font-serif font-bold text-slate-900">Question {currentIndex + 1} <span className="text-slate-400 text-lg font-normal">/ 25</span></h2>
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <button onClick={useFiftyFifty} disabled={!lifelines.fiftyFifty || currentQ.type !== 'mcq' || checkState !== 'idle'} className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border transition-all ${!lifelines.fiftyFifty ? 'border-slate-200 text-slate-300 bg-slate-50' : currentQ.type !== 'mcq' ? 'border-slate-200 text-slate-300 bg-transparent cursor-not-allowed opacity-50' : 'border-amber-300 text-amber-600 bg-amber-50 hover:bg-amber-100 hover:border-amber-400 shadow-sm'}`} title="50:50 刪除兩個錯誤答案">
+                                        <span className="font-bold text-sm">50:50</span>
+                                    </button>
+                                    <button onClick={useAskAudience} disabled={!lifelines.askAudience || currentQ.type !== 'mcq' || checkState !== 'idle'} className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border transition-all ${!lifelines.askAudience ? 'border-slate-200 text-slate-300 bg-slate-50' : currentQ.type !== 'mcq' ? 'border-slate-200 text-slate-300 bg-transparent cursor-not-allowed opacity-50' : 'border-amber-300 text-amber-600 bg-amber-50 hover:bg-amber-100 hover:border-amber-400 shadow-sm'}`} title="詢問現場觀眾">
+                                        <i className="fas fa-users"></i>
+                                    </button>
+                                    <button onClick={useHint} disabled={!lifelines.hint || checkState !== 'idle'} className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border transition-all ${!lifelines.hint ? 'border-slate-200 text-slate-300 bg-slate-50' : 'border-amber-300 text-amber-600 bg-amber-50 hover:bg-amber-100 hover:border-amber-400 shadow-sm'}`} title="智囊團提示">
+                                        <i className="fas fa-lightbulb"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* 進度條 */}
+                            <div className="mb-8">
+                                <div className="flex justify-between items-end mb-3">
+                                    <span className="text-sm font-bold text-slate-500 tracking-wider">CHALLENGE PROGRESS</span>
+                                    <div className="text-right">
+                                        <span className="text-xs text-slate-400 uppercase tracking-widest block mb-1 font-bold">已保證獎金</span>
+                                        <span className="text-2xl font-mono font-bold text-amber-600">${earnedPrize.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                                <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                                    <div className="bg-gradient-to-r from-amber-400 to-amber-500 h-full transition-all duration-700 ease-out" style={{ width: `${(currentIndex / activeQuestions.length) * 100}%` }}></div>
+                                </div>
+                            </div>
+
+                            {/* 題目區域 */}
+                            <div className="mb-10 relative">
+                                <div className="text-amber-600/90 font-mono text-sm font-bold tracking-widest mb-4 flex items-center gap-3">
+                                    <span className="h-[2px] w-8 bg-amber-500/50 block"></span> VALUE: ${currentQ.prize.toLocaleString()}
+                                </div>
+                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold leading-[1.5] text-slate-900">{currentQ.q}</h1>
+                            </div>
+
+                            {/* 答案區域 */}
+                            <div className="w-full pb-10">
+                                {/* 題型：選擇題 */}
+                                {currentQ.type === 'mcq' && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                        {currentQ.options.map((opt, idx) => {
+                                            const isHidden = hiddenOptions.includes(idx);
+                                            if (isHidden) return <div key={idx} className="hidden md:block opacity-0"></div>;
+                                            
+                                            let btnClass = "relative group flex items-center p-5 md:p-6 rounded-2xl border-2 transition-all duration-300 ";
+                                            const isSelected = selectedAns === idx;
+                                            
+                                            if (checkState === 'idle') {
+                                                btnClass += "border-slate-200 bg-white hover:bg-slate-50 hover:border-amber-400 shadow-sm cursor-pointer";
+                                            } else if (checkState === 'checking' && isSelected) {
+                                                btnClass += "border-amber-400 bg-amber-50 shadow-md";
+                                            } else if (checkState === 'correct' || checkState === 'wrong') {
+                                                if (revealedAns === idx) btnClass += "correct-ans-glow z-10"; 
+                                                else if (isSelected) btnClass += "wrong-ans-glow"; 
+                                                else btnClass += "border-slate-200 bg-white opacity-40"; 
+                                            } else {
+                                                btnClass += "border-slate-200 bg-white opacity-40 cursor-not-allowed";
+                                            }
+
+                                            const audiencePct = audienceData ? audienceData[idx] : null;
+
+                                            return (
+                                                <button key={idx} onClick={() => handleMCQSubmit(idx)} disabled={checkState !== 'idle'} className={btnClass}>
+                                                    <span className="text-amber-500 font-serif font-bold text-xl mr-4 md:mr-6">{['A', 'B', 'C', 'D'][idx]}</span>
+                                                    <span className="text-lg text-slate-700 font-medium text-left flex-1">{opt}</span>
+                                                    {audienceData && (
+                                                        <div className="absolute right-4 md:right-6 flex items-center gap-3">
+                                                            <div className="text-sm font-bold text-slate-500">{audiencePct}%</div>
+                                                            <div className="hidden md:block w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                                                <div className="h-full bg-amber-500 rounded-full" style={{ width: `${audiencePct}%` }}></div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+
+                                {/* 題型：填充題 / 人物題 */}
+                                {currentQ.type === 'text' && (
+                                    <form onSubmit={handleTextSubmit} className="max-w-3xl flex flex-col items-start gap-8">
+                                        <div className="relative w-full">
+                                            <input 
+                                                type="text" 
+                                                value={textInput} 
+                                                onChange={(e) => setTextInput(e.target.value)} 
+                                                disabled={checkState !== 'idle'} 
+                                                placeholder="在此輸入您的答案..." 
+                                                className={`w-full bg-transparent border-b-4 py-4 text-3xl md:text-4xl font-bold focus:outline-none transition-colors placeholder:text-slate-300 placeholder:font-light ${checkState === 'idle' ? 'border-slate-300 focus:border-amber-400 text-slate-900' : checkState === 'checking' ? 'border-amber-400 text-amber-500' : checkState === 'correct' ? 'border-green-400 text-green-600' : 'border-red-400 text-red-600'}`} 
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-6">
+                                            {checkState === 'idle' && (
+                                                <button type="submit" className="px-10 py-4 bg-slate-800 hover:bg-slate-900 rounded-full text-white font-bold tracking-[0.1em] shadow-md transition-all active:scale-95">提交答案</button>
+                                            )}
+                                            {(checkState === 'correct' || checkState === 'wrong') && (
+                                                <div className={`text-xl font-bold flex items-center gap-3 bg-white px-6 py-3 rounded-xl border ${checkState === 'correct' ? 'text-green-600 border-green-200' : 'text-red-600 border-red-200 shadow-sm'}`}>
+                                                    {checkState === 'correct' ? <i className="fas fa-check-circle text-2xl"></i> : <i className="fas fa-times-circle text-2xl"></i>}
+                                                    正確解答：<span className="font-serif">{revealedAns}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </form>
+                                )}
+
+                                {/* 題型：排序題 */}
+                                {currentQ.type === 'order' && (
+                                    <div className="space-y-6">
+                                        <div className="flex flex-col gap-3">
+                                            {currentQ.options.map((opt, idx) => {
+                                                const orderIndex = orderSelection.indexOf(idx);
+                                                const isSelected = orderIndex !== -1;
+                                                let bgClass = "bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300 cursor-pointer shadow-sm";
+                                                let numBadge = <div className="w-8 h-8 rounded-full border-2 border-slate-200 absolute left-6 flex items-center justify-center text-slate-300"><i className="fas fa-plus text-xs"></i></div>;
+
+                                                if (isSelected) {
+                                                    bgClass = "bg-amber-50 border-amber-300";
+                                                    numBadge = <span className="absolute left-6 w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-md animate-[pop_0.2s_ease-out]">{orderIndex + 1}</span>;
+                                                }
+                                                if (checkState !== 'idle') {
+                                                    bgClass = "bg-white border-slate-200 opacity-50 cursor-not-allowed";
+                                                    if (checkState === 'correct' || checkState === 'wrong') {
+                                                        const correctIdx = revealedAns.indexOf(idx);
+                                                        bgClass = "bg-green-50 border-green-300 opacity-100";
+                                                        numBadge = <span className="absolute left-6 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-md">{correctIdx + 1}</span>;
+                                                    }
+                                                }
+                                                return (
+                                                    <div key={idx} onClick={() => handleOrderSelect(idx)} className={`relative flex items-center min-h-[80px] px-6 pl-20 rounded-2xl border-2 transition-all duration-300 ${bgClass}`}>
+                                                        {numBadge}
+                                                        <span className="text-lg font-medium text-slate-700">{opt}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                        {checkState === 'idle' && (
+                                            <div className="flex items-center gap-6 pt-4">
+                                                <button onClick={() => setOrderSelection([])} className="text-sm font-bold text-slate-400 hover:text-slate-600 tracking-widest uppercase transition-colors px-4 py-2 bg-white rounded-lg border border-slate-200">重設順序</button>
+                                                {orderSelection.length === 4 && <span className="text-amber-600 font-bold tracking-widest uppercase text-sm animate-pulse"><i className="fas fa-spinner fa-spin mr-2"></i>正在核對歷史軌跡...</span>}
+                                            </div>
+                                        )}
+                                        {(checkState === 'wrong') && (
+                                            <div className="text-red-500 font-bold text-lg mt-4 flex items-center gap-3 bg-red-50 p-4 rounded-xl border border-red-100">
+                                                <i className="fas fa-exclamation-circle text-2xl"></i> 順序錯誤，正確的歷史進程已顯示於上方綠色區塊。
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* 解析區塊 */}
+                                {(checkState === 'correct' || checkState === 'wrong') && (
+                                    <div className="mt-8 p-6 md:p-8 bg-blue-50/80 border border-blue-200 rounded-2xl shadow-sm relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                                        <h4 className="text-sm font-bold text-blue-800 uppercase tracking-widest mb-3 flex items-center gap-2 relative z-10">
+                                            <i className="fas fa-book-open text-blue-600"></i> 歷史解析
+                                        </h4>
+                                        <p className="text-lg text-slate-700 font-medium leading-relaxed relative z-10">{currentQ.explanation}</p>
+                                    </div>
+                                )}
+
+                                {/* 下一步按鈕 */}
+                                {(checkState === 'correct' || checkState === 'wrong') && (
+                                    <div className="mt-8 flex justify-end">
+                                        <button onClick={handleNext} className={`px-10 py-5 rounded-full font-bold tracking-widest uppercase transition-all shadow-lg flex items-center gap-3 hover:-translate-y-1 active:translate-y-0 ${checkState === 'correct' ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-slate-800 hover:bg-slate-900 text-white'}`}>
+                                            {checkState === 'correct' ? (currentIndex === activeQuestions.length - 1 ? '領取百萬大獎' : '繼續下一題') : '查看結算'}
+                                            <i className="fas fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 右側：獎金表 (隱藏於小螢幕，或作為側邊欄) */}
+                    <div className="hidden lg:flex w-80 border-l border-slate-200 bg-white shadow-xl flex-col py-8 px-6 relative z-20 h-screen sticky top-0">
+                        <h3 className="text-amber-600 font-bold tracking-[0.3em] uppercase text-xs mb-6 text-center">Prize Ladder</h3>
+                        <div ref={prizeLadderRef} className="flex flex-col gap-1.5 flex-1 overflow-y-auto pr-2 pb-10">
+                            {PRIZES.map((prize, idx) => {
+                                const actualQIndex = PRIZES.length - 1 - idx;
+                                const isCurrent = actualQIndex === currentIndex;
+                                const isPassed = actualQIndex < currentIndex;
+                                const isMilestone = prize === 1000000 || prize === 100000 || prize === 10000;
+                                
+                                let rowClass = "flex justify-between items-center py-2.5 px-4 rounded-xl text-sm font-mono transition-all duration-300 ";
+                                let textClass = "";
+
+                                if (isCurrent) { 
+                                    rowClass += "bg-amber-50 border border-amber-300 scale-105 shadow-sm relative z-10 my-1"; 
+                                    textClass = "text-amber-600 font-bold"; 
+                                } else if (isPassed) { 
+                                    textClass = "text-slate-300 line-through decoration-slate-200"; 
+                                } else { 
+                                    textClass = isMilestone ? "text-slate-800 font-bold" : "text-slate-500 font-medium"; 
+                                }
+
+                                return (
+                                    <div key={idx} className={rowClass}>
+                                        <span className={`w-8 text-left ${textClass}`}>{actualQIndex + 1}</span>
+                                        <span className={`flex-1 text-right ${textClass}`}>${prize.toLocaleString()}</span>
+                                        {isCurrent && <div className="absolute -left-1.5 w-1.5 h-1/2 bg-amber-400 rounded-full shadow-md top-1/2 -translate-y-1/2"></div>}
+                                        {isMilestone && !isPassed && !isCurrent && <div className="absolute left-2 w-1 h-1 bg-slate-300 rounded-full"></div>}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        {/* 底部裝飾漸層 */}
+                        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                    </div>
+                </div>
             );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
